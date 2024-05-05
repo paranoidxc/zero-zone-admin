@@ -1,0 +1,86 @@
+$--colors: (
+        "primary": (
+                "base": purple,
+        ),
+        "success": (
+                "base": #21ba45,
+        ),
+        "warning": (
+                "base": #f2711c,
+        ),
+        "danger": (
+                "base": #db2828,
+        ),
+        "error": (
+                "base": #db2828,
+        ),
+        "info": (
+                "base": #42b8dd,
+        ),
+);
+
+// we can add this to custom namespace, default is 'el'
+@forward "element-plus/theme-chalk/src/mixins/config.scss" with (
+  $namespace: "ep"
+);
+
+// You should use them in scss, because we calculate it by sass.
+// comment next lines to use default color
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+  // do not use same name, it will override.
+  $colors: $--colors,
+  $button-padding-horizontal: ("default": 50px)
+);
+
+
+:root {
+  --my-btn-background: #4d70ff;
+  --my-light-backgroud: #f7fbff;
+}
+
+.el-sub-menu__title:hover {
+  color: red !important;
+  background-color: #409eff !important;
+}
+
+.el-sub-menu__title.active {
+  color: red !important;
+  background-color: #409eff !important;
+}
+
+.el-menu-item__title:hover {
+  color: green !important;
+  background-color: #409eff !important;
+}
+
+
+.el-button--primary {
+  //background: var(--my-btn-background);
+}
+
+.el-menu-item.is-active {
+  //background: var(--my-light-backgroud);
+  //background: var(--el-color-primary-light-9);
+  //color: var(--my-btn-background);
+  //font-weight: bold;
+}
+
+
+/*
+.theme-default {
+  --el-color-primary: #4d70ff;
+}
+
+.el-button--primary {
+  background: var(--el-color-primary);
+}
+*/
+
+.el-table th.el-table__cell .cell {
+  color: #3B4554;
+}
+
+.el-table th.el-table__cell.is-leaf,
+.el-table th.el-table__cell {
+  background: #f7fbff;
+}
