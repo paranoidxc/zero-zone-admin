@@ -21,7 +21,7 @@ Log:
 
 JwtAuth:
   AccessSecret: kRZ3kA7LuB4LqOWi
-  AccessExpire: 86400
+  AccessExpire: 86400000000
 
 Mysql:
   DataSource: root:fucking@tcp(127.0.0.1:13306)/zero_zone?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai

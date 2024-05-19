@@ -13,6 +13,8 @@ import (
 	sysrole "zero-zone/app/core/cmd/api/internal/handler/sys/role"
 	sysuser "zero-zone/app/core/cmd/api/internal/handler/sys/user"
 	user "zero-zone/app/core/cmd/api/internal/handler/user"
+	syscronjob "zero-zone/app/core/cmd/api/internal/handler/sys/cronjob"
+	sysautocurd "zero-zone/app/core/cmd/api/internal/handler/sys/autocurd"
 	"zero-zone/app/core/cmd/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -322,5 +324,61 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		),
 		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
 		rest.WithPrefix("/admin/log/login"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 新增
+				Method:  http.MethodPost,
+				Path:    "/add",
+				Handler: syscronjob.AddCronjobHandler(serverCtx),
+			},
+			{
+				// 删除
+				Method:  http.MethodPost,
+				Path:    "/delete",
+				Handler: syscronjob.DeleteCronjobHandler(serverCtx),
+			},
+			{
+				// 全部不分页
+				Method:  http.MethodGet,
+				Path:    "/list",
+				Handler: syscronjob.GetCronjobListHandler(serverCtx),
+			},
+			{
+				// 分页
+				Method:  http.MethodGet,
+				Path:    "/page",
+				Handler: syscronjob.GetCronjobPageHandler(serverCtx),
+			},
+			{
+				// 更新
+				Method:  http.MethodPost,
+				Path:    "/update",
+				Handler: syscronjob.UpdateCronjobHandler(serverCtx),
+			},
+			{
+				// 查看
+				Method:  http.MethodPost,
+				Path:    "/view",
+				Handler: syscronjob.ViewCronjobHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+		rest.WithPrefix("/admin/sys/cronjob"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 新增
+				Method:  http.MethodPost,
+				Path:    "/add",
+				Handler: sysautocurd.AddAutoCurdHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+		rest.WithPrefix("/admin/sys/autocurd"),
 	)
 }
