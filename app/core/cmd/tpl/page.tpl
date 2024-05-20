@@ -1,4 +1,4 @@
-func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageRequest) (resp *types.{{ .Name }}PageResponse, err error) {
+func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageReq) (resp *types.{{ .Name }}PageResp, err error) {
     where := " 1 "
     sys{{ .Name }}Page, err := l.svcCtx.Sys{{ .Name }}Model.FindPageByWhere(l.ctx, where, req.Page, req.Limit)
 	if err != nil {
@@ -26,7 +26,7 @@ func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageRequest
          Total: total,
     }
 
-	return &types.{{ .Name }}PageResponse{
+	return &types.{{ .Name }}PageResp{
 		List: {{ .Name }}Page,
    		Pagination: pagination,
 	}, nil

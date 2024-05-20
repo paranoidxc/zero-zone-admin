@@ -62,81 +62,92 @@ type Pagination struct {
 }
 
 type TdFirm struct {
-	FirmId    string `json:"firm_id"`
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmCreateRequest struct {
+type TdFirmCreateReq struct {
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmCreateResponse struct {
-	FirmId    string `json:"firm_id"`
+type TdFirmCreateResp struct {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmDeleteRequest struct {
-	FirmId string `form:"firm_id"`
+type TdFirmDeleteReq struct {
+	FirmId int64 `form:"firm_id"`
 }
 
-type TdFirmDeleteResponse struct {
-	FirmId string `json:"firm_id"`
+type TdFirmDeleteResp struct {
+	FirmId int64 `json:"firm_id"`
 }
 
-type TdFirmDetailRequest struct {
-	FirmId string `form:"firm_id"`
+type TdFirmDeletesReq struct {
+	FirmId int64 `form:"[]firm_id"`
 }
 
-type TdFirmDetailResponse struct {
-	FirmId    string `json:"firm_id"`
+type TdFirmDeletesResp struct {
+	FirmId int64 `json:"[]firm_id"`
+}
+
+type TdFirmDetailReq struct {
+	FirmId int64 `form:"firm_id"`
+}
+
+type TdFirmDetailResp struct {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmListRequest struct {
-	PageSize  int     `form:"page_size"`
-	PageNum   int     `form:"page_num"`
-	FirmName  *string `form:"firm_name,optional"`
-	FirmAlias *string `form:"firm_alias,optional"`
-	FirmCode  *string `form:"firm_code,optional"`
-	FirmDesc  *string `form:"firm_desc,optional"`
+type TdFirmListReq struct {
+	PageReq
+	FirmName  *string `form:"firm_name,option"`
+	FirmAlias *string `form:"firm_alias,option"`
+	FirmCode  *string `form:"firm_code,option"`
+	FirmDesc  *string `form:"firm_desc,option"`
 }
 
-type TdFirmListResponse struct {
+type TdFirmListResp struct {
 	List  []*TdFirm `json:"list"`
 	Total int64     `json:"total"`
 }
 
-type TdFirmPageRequest struct {
+type TdFirmPageReq struct {
 	PageReq
+	FirmName  *string `form:"firm_name,option"`
+	FirmAlias *string `form:"firm_alias,option"`
+	FirmCode  *string `form:"firm_code,option"`
+	FirmDesc  *string `form:"firm_desc,option"`
 }
 
-type TdFirmPageResponse struct {
+type TdFirmPageResp struct {
 	List       []*TdFirm  `json:"list"`
 	Pagination Pagination `json:"pagination"`
 }
 
-type TdFirmUpdateRequest struct {
-	FirmId    string `json:"firm_id"`
+type TdFirmUpdateReq struct {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmUpdateResponse struct {
-	FirmId    string `json:"firm_id"`
+type TdFirmUpdateResp struct {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`

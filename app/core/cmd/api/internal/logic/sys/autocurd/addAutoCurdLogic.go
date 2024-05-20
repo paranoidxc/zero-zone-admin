@@ -58,6 +58,8 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	createContent := ""
 	deleteContentRequest := ""
 	deleteContentResponse := ""
+	deletesContentRequest := ""
+	deletesContentResponse := ""
 	updateContent := ""
 	listContent := ""
 	pageContent := ""
@@ -97,6 +99,22 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 		tag := `json:"` + field.Tag.Get("json") + `"`
 		deleteContentResponse += (item + " `" + tag + "`" + "\n")
 	}
+
+	// deletes Request需要的字段
+	// 取第一个 所以第一个需要是主键
+	for i := 0; i < 1; i++ {
+		field := m.Field(i)
+		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
+		tag := `form:"[]` + field.Tag.Get("json") + `"`
+		deletesContentRequest += (item + " `" + tag + "`" + "\n")
+	}
+	// deletes Response需要的字段
+	for i := 0; i < 1; i++ {
+		field := m.Field(i)
+		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
+		tag := `json:"[]` + field.Tag.Get("json") + `"`
+		deletesContentResponse += (item + " `" + tag + "`" + "\n")
+	}
 	// update及列表返回等需要的字段
 	for i := 0; i < m.NumField(); i++ {
 		field := m.Field(i)
@@ -108,9 +126,17 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
-		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
+		tag := `form:"` + field.Tag.Get("json") + ",option" + `"`
 		listContent += (item + " `" + tag + "`" + "\n")
 	}
+	// page request需要的字段
+	for i := 1; i < m.NumField(); i++ {
+		field := m.Field(i)
+		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
+		tag := `form:"` + field.Tag.Get("json") + ",option" + `"`
+		pageContent += (item + " `" + tag + "`" + "\n")
+	}
+
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
 		key := field.Tag.Get("json")
@@ -125,6 +151,8 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	CreateResponse := getCreateResponse(name, updateContent)
 	DeleteRequest := getDeleteRequest(name, deleteContentRequest)
 	DeleteResponse := getDeleteResponse(name, deleteContentResponse)
+	DeletesRequest := getDeletesRequest(name, deletesContentRequest)
+	DeletesResponse := getDeletesResponse(name, deletesContentResponse)
 	UpdateRequest := getUpdateRequest(name, updateContent)
 	UpdateResponse := getUpdateResponse(name, updateContent)
 	DetailRequest := getDetailRequest(name, deleteContentRequest)
@@ -141,6 +169,8 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	res += CreateResponse + "\n"
 	res += DeleteRequest + "\n"
 	res += DeleteResponse + "\n"
+	res += DeletesRequest + "\n"
+	res += DeletesResponse + "\n"
 	res += UpdateRequest + "\n"
 	res += UpdateResponse + "\n"
 	res += DetailRequest + "\n"
@@ -178,77 +208,84 @@ func getStruct(name, content string) string {
 }
 
 func getCreateRequest(name, content string) string {
-	return fmt.Sprintf(`type %vCreateRequest {
+	return fmt.Sprintf(`type %vCreateReq {
 		%v
 	}`, name, content)
 }
 func getCreateResponse(name, content string) string {
-	return fmt.Sprintf(`type %vCreateResponse {
+	return fmt.Sprintf(`type %vCreateResp {
 		%v
 	}`, name, content)
 }
 func getDeleteRequest(name, content string) string {
-	return fmt.Sprintf(`type %vDeleteRequest {
+	return fmt.Sprintf(`type %vDeleteReq {
 		%v
 	}`, name, content)
 }
 func getDeleteResponse(name, content string) string {
-	return fmt.Sprintf(`type %vDeleteResponse {
+	return fmt.Sprintf(`type %vDeleteResp {
 		%v
 	}`, name, content)
 }
-
+func getDeletesRequest(name, content string) string {
+	return fmt.Sprintf(`type %vDeletesReq {
+		%v
+	}`, name, content)
+}
+func getDeletesResponse(name, content string) string {
+	return fmt.Sprintf(`type %vDeletesResp {
+		%v
+	}`, name, content)
+}
 func getUpdateRequest(name, content string) string {
-	return fmt.Sprintf(`type %vUpdateRequest {
+	return fmt.Sprintf(`type %vUpdateReq {
 		%v
 	}`, name, content)
 }
 func getUpdateResponse(name, content string) string {
-	return fmt.Sprintf(`type %vUpdateResponse {
+	return fmt.Sprintf(`type %vUpdateResp {
 		%v
 	}`, name, content)
 }
 
 func getDetailRequest(name, content string) string {
-	return fmt.Sprintf(`type %vDetailRequest {
+	return fmt.Sprintf(`type %vDetailReq {
 		%v
 	}`, name, content)
 }
 func getDetailResponse(name, content string) string {
-	return fmt.Sprintf(`type %vDetailResponse {
+	return fmt.Sprintf(`type %vDetailResp {
 		%v
 	}`, name, content)
 }
 
 // 列表
 func getListRequest(name, listContent string) string {
-	tag_page_size := "`" + "form:" + `"page_size"` + "`"
-	tag_page_num := "`" + "form:" + `"page_num"` + "`"
-	return fmt.Sprintf(`type %vListRequest {
-		PageSize int  %v
-		PageNum int  %v
+	return fmt.Sprintf(`type %vListReq {
+		PageReq
 		%v
-	}`, name, tag_page_size, tag_page_num, listContent)
+	}`, name, listContent)
 }
 func getListResponse(name string) string {
 	tag_list := "`" + "json:" + `"list"` + "`"
 	tag_total := "`" + "json:" + `"total"` + "`"
-	return fmt.Sprintf(`type %vListResponse {
+	return fmt.Sprintf(`type %vListResp {
 		List  []*%v %v
 		Total int64   %v                         
 	}`, name, name, tag_list, tag_total)
 }
 
 // 分页列表
-func getPageRequest(name, listContent string) string {
-	return fmt.Sprintf(`type %vPageRequest {
+func getPageRequest(name, pageContent string) string {
+	return fmt.Sprintf(`type %vPageReq {
 		PageReq
-	}`, name)
+		%v
+	}`, name, pageContent)
 }
 func getPageResponse(name string) string {
 	tag_list := "`" + "json:" + `"list"` + "`"
 	tag_pagination := "`" + "json:" + `"pagination"` + "`"
-	return fmt.Sprintf(`type %vPageResponse {
+	return fmt.Sprintf(`type %vPageResp {
 		List  []*%v %v
 		Pagination Pagination   %v                         
 	}`, name, name, tag_list, tag_pagination)
@@ -265,26 +302,29 @@ func getServerContent(name, underlineName string) string {
 )
 
 service core-api {
-	@handler %vCreate
-	post /(%vCreateRequest) returns (%vCreateResponse)
-	
-	@handler %vDelete
-	delete /(%vDeleteRequest) returns (%vDeleteResponse)
-	
-	@handler %vUpdate
-	put /(%vUpdateRequest) returns (%vUpdateResponse)
-	
-	@handler %vDetail
-	get /detail(%vDetailRequest) returns (%vDetailResponse)
-
 	@handler %vList
-	get /list(%vListRequest) returns (%vListResponse)
+	get /list(%vListReq) returns (%vListResp)
 
 	@handler %vPage
-	get /page(%vPageRequest) returns (%vPageResponse)
+	get /page(%vPageReq) returns (%vPageResp)
+
+	@handler %vCreate
+	post /(%vCreateReq) returns (%vCreateResp)
+	
+	@handler %vDelete
+	post /(%vDeleteReq) returns (%vDeleteResp)
+	
+	@handler %vDeletes
+	post /(%vDeletesReq) returns (%vDeletesResp)
+
+	@handler %vUpdate
+	post /(%vUpdateReq) returns (%vUpdateResp)
+	
+	@handler %vDetail
+	get /detail(%vDetailReq) returns (%vDetailResp)
 }
 
-`, underlineName, underlineName, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name)
+`, underlineName, underlineName, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name)
 }
 
 func createApiFile(underlineName, res string) error {
@@ -346,27 +386,18 @@ func editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson string, v
 	// 新增逻辑
 	createLogic := fmt.Sprintf(`
 
-func (l *%vCreateLogic) %vCreate(req *types.%vCreateRequest) (resp *types.%vCreateResponse, err error) {
-	modelParams := &model.%v{}
+func (l *%vCreateLogic) %vCreate(req *types.%vCreateReq) (resp *types.%vCreateResp, err error) {
+	var modelParams = new(model.%v)
 	err = copier.Copy(modelParams, req)
 	if err != nil {
-		logx.Error("复制入参失败", err)
-		return nil, err
+		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
-	err = l.svcCtx.PublicDb.Save(&modelParams).Error
+	_, err = l.svcCtx.Sys%vModel.Insert(l.ctx, modelParams)
 	if err != nil {
-		logx.Error("写入数据库失败", err)
-		return nil, err
+		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
-	resp = &types.%vCreateResponse{}
-	err = copier.Copy(resp, modelParams)
-	if err != nil {
-		logx.Error("复制结果失败", err)
-		return nil, err
-	}
-
-	return
+	return nil, nil
 }
 
 `, name, name, name, name, name, name)
@@ -374,10 +405,23 @@ func (l *%vCreateLogic) %vCreate(req *types.%vCreateRequest) (resp *types.%vCrea
 	// 删除逻辑
 	deleteLogic := fmt.Sprintf(`
 
-func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteRequest) (resp *types.%vDeleteResponse, err error) {
+func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteReq) (resp *types.%vDeleteResp, err error) {
+	err = l.svcCtx.Sys%vModel.Delete(l.ctx, req.%v)
+	if err != nil {
+		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+	}
+
+	return nil, nil
+}
+
+`, name, name, name, name, name, primaryKeyName)
+
+	deletesLogic := fmt.Sprintf(`
+
+func (l *%vDeletesLogic) %vDeletes(req *types.%vDeletesReq) (resp *types.%vDeletesResp, err error) {
 	ids := strings.Split(req.%v, ",")
 	err = l.svcCtx.PublicDb.Where("%v in ?", ids).Delete(&model.%v{}).Error
-	resp = &types.%vDeleteResponse{
+	resp = &types.%vDeletesResp{
 		%v: req.%v,
 	}
 	return
@@ -388,34 +432,36 @@ func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteRequest) (resp *types.%vDele
 	// 修改逻辑
 	updateLogic := fmt.Sprintf(`
 
-func (l *%vUpdateLogic) %vUpdate(req *types.%vUpdateRequest) (resp *types.%vUpdateResponse, err error) {
-	item := &model.%v{}
-	l.svcCtx.PublicDb.Where("%v = ?", req.%v).First(&item)
-	err = copier.Copy(item, req)
+func (l *%vUpdateLogic) %vUpdate(req *types.%vUpdateReq) (resp *types.%vUpdateResp, err error) {
+	modelParams := &model.%v{}
+	modelParams, err = l.svcCtx.Sys%vModel.FindOne(l.ctx, req.%v)
+	if err != nil {
+		return nil, errorx2.NewDefaultError(errorx2.UserIdErrorCode)
+	}
+
+	err = copier.Copy(modelParams, req)
 	if err != nil {
 		logx.Error("复制参数失败", err)
-		return nil, err
-	}
-	err = l.svcCtx.PublicDb.Save(&item).Error
-	resp = &types.%vUpdateResponse{}
-	err = copier.Copy(resp, item)
-	if err != nil {
-		logx.Error("复制结果失败", err)
-		return nil, err
+		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
-	return
+	err = l.svcCtx.Sys%vModel.Update(l.ctx, modelParams)
+	if err != nil {
+		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+	}
+
+	return nil, nil
 }
 
-`, name, name, name, name, name, primaryKeyJson, primaryKeyName, name)
+`, name, name, name, name, name, name, primaryKeyName, name)
 
 	// 详情逻辑
 	detailLogic := fmt.Sprintf(`
 
-func (l *%vDetailLogic) %vDetail(req *types.%vDetailRequest) (resp *types.%vDetailResponse, err error) {
-	resp = &types.%vDetailResponse{}
-	item := model.%v{}
-	err = l.svcCtx.PublicDb.Where("%v = ?", req.%v).First(&item).Error
+func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailResp, err error) {
+	resp = &types.%vDetailResp{}
+	item := &model.%v{}
+	item, err = l.svcCtx.Sys%vModel.FindOne(l.ctx, req.%v)
 	err = copier.Copy(resp, item)
 	if err != nil {
 		logx.Error("复制结果失败", err)
@@ -424,7 +470,7 @@ func (l *%vDetailLogic) %vDetail(req *types.%vDetailRequest) (resp *types.%vDeta
 	return
 }
 
-`, name, name, name, name, name, name, primaryKeyJson, primaryKeyName)
+`, name, name, name, name, name, name, name, primaryKeyName)
 
 	// 列表逻辑
 	listLogic, _ := getListLogic(name, vueFields)
@@ -437,18 +483,20 @@ func (l *%vDetailLogic) %vDetail(req *types.%vDetailRequest) (resp *types.%vDeta
 	projectWd, _ := os.Getwd()
 	createLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"CreateLogic.go")
 	deleteLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"DeleteLogic.go")
+	deletesLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"DeletesLogic.go")
 	updateLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"UpdateLogic.go")
 	detailLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"DetailLogic.go")
 	listLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"ListLogic.go")
 	pageLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"PageLogic.go")
 
 	fileList := map[string]string{
-		createLogicFile: createLogic,
-		deleteLogicFile: deleteLogic,
-		updateLogicFile: updateLogic,
-		detailLogicFile: detailLogic,
-		listLogicFile:   listLogic,
-		pageLogicFile:   pageLogic,
+		createLogicFile:  createLogic,
+		deleteLogicFile:  deleteLogic,
+		deletesLogicFile: deletesLogic,
+		updateLogicFile:  updateLogic,
+		detailLogicFile:  detailLogic,
+		listLogicFile:    listLogic,
+		pageLogicFile:    pageLogic,
 	}
 	for k, v := range fileList {
 		// 向文件中追加内容

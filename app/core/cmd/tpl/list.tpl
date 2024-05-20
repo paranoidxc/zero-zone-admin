@@ -1,4 +1,4 @@
-func (l *{{ .Name }}ListLogic) {{ .Name }}List(req *types.{{ .Name }}ListRequest) (resp *types.{{ .Name }}ListResponse, err error) {
+func (l *{{ .Name }}ListLogic) {{ .Name }}List(req *types.{{ .Name }}ListReq) (resp *types.{{ .Name }}ListResp, err error) {
     where := " 1 "
     sys{{ .Name }}List, err := l.svcCtx.Sys{{ .Name }}Model.FindAllByWhere(l.ctx, where)
 	if err != nil {
@@ -15,7 +15,7 @@ func (l *{{ .Name }}ListLogic) {{ .Name }}List(req *types.{{ .Name }}ListRequest
 		{{ .Name }}List = append({{ .Name }}List, &item)
 	}
 
-	return &types.{{ .Name }}ListResponse{
+	return &types.{{ .Name }}ListResp{
 		List: {{ .Name }}List,
 	}, nil
 }

@@ -1,81 +1,92 @@
 type TdFirm {
-	FirmId    string `json:"firm_id"`
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmCreateRequest {
+type TdFirmCreateReq {
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmCreateResponse {
-	FirmId    string `json:"firm_id"`
+type TdFirmCreateResp {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmDeleteRequest {
-	FirmId string `form:"firm_id"`
+type TdFirmDeleteReq {
+	FirmId int64 `form:"firm_id"`
 }
 
-type TdFirmDeleteResponse {
-	FirmId string `json:"firm_id"`
+type TdFirmDeleteResp {
+	FirmId int64 `json:"firm_id"`
 }
 
-type TdFirmUpdateRequest {
-	FirmId    string `json:"firm_id"`
+type TdFirmDeletesReq {
+	FirmId int64 `form:"[]firm_id"`
+}
+
+type TdFirmDeletesResp {
+	FirmId int64 `json:"[]firm_id"`
+}
+
+type TdFirmUpdateReq {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmUpdateResponse {
-	FirmId    string `json:"firm_id"`
+type TdFirmUpdateResp {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmDetailRequest {
-	FirmId string `form:"firm_id"`
+type TdFirmDetailReq {
+	FirmId int64 `form:"firm_id"`
 }
 
-type TdFirmDetailResponse {
-	FirmId    string `json:"firm_id"`
+type TdFirmDetailResp {
+	FirmId    int64  `json:"firm_id"`
 	FirmName  string `json:"firm_name"`
 	FirmAlias string `json:"firm_alias"`
 	FirmCode  string `json:"firm_code"`
 	FirmDesc  string `json:"firm_desc"`
 }
 
-type TdFirmListRequest {
-	PageSize  int     `form:"page_size"`
-	PageNum   int     `form:"page_num"`
-	FirmName  *string `form:"firm_name,optional"`
-	FirmAlias *string `form:"firm_alias,optional"`
-	FirmCode  *string `form:"firm_code,optional"`
-	FirmDesc  *string `form:"firm_desc,optional"`
+type TdFirmListReq {
+	PageReq
+	FirmName  *string `form:"firm_name,option"`
+	FirmAlias *string `form:"firm_alias,option"`
+	FirmCode  *string `form:"firm_code,option"`
+	FirmDesc  *string `form:"firm_desc,option"`
 }
 
-type TdFirmListResponse {
+type TdFirmListResp {
 	List  []*TdFirm `json:"list"`
 	Total int64     `json:"total"`
 }
 
-type TdFirmPageRequest {
+type TdFirmPageReq {
 	PageReq
+	FirmName  *string `form:"firm_name,option"`
+	FirmAlias *string `form:"firm_alias,option"`
+	FirmCode  *string `form:"firm_code,option"`
+	FirmDesc  *string `form:"firm_desc,option"`
 }
 
-type TdFirmPageResponse {
+type TdFirmPageResp {
 	List       []*TdFirm  `json:"list"`
 	Pagination Pagination `json:"pagination"`
 }
@@ -86,22 +97,25 @@ type TdFirmPageResponse {
 	jwt:    JwtAuth
 )
 service core-api {
-	@handler TdFirmCreate
-	post / (TdFirmCreateRequest) returns (TdFirmCreateResponse)
-
-	@handler TdFirmDelete
-	delete / (TdFirmDeleteRequest) returns (TdFirmDeleteResponse)
-
-	@handler TdFirmUpdate
-	put / (TdFirmUpdateRequest) returns (TdFirmUpdateResponse)
-
-	@handler TdFirmDetail
-	get /detail (TdFirmDetailRequest) returns (TdFirmDetailResponse)
-
 	@handler TdFirmList
-	get /list (TdFirmListRequest) returns (TdFirmListResponse)
+	get /list (TdFirmListReq) returns (TdFirmListResp)
 
 	@handler TdFirmPage
-	get /page (TdFirmPageRequest) returns (TdFirmPageResponse)
+	get /page (TdFirmPageReq) returns (TdFirmPageResp)
+
+	@handler TdFirmCreate
+	post / (TdFirmCreateReq) returns (TdFirmCreateResp)
+
+	@handler TdFirmDelete
+	post / (TdFirmDeleteReq) returns (TdFirmDeleteResp)
+
+	@handler TdFirmDeletes
+	post / (TdFirmDeletesReq) returns (TdFirmDeletesResp)
+
+	@handler TdFirmUpdate
+	post / (TdFirmUpdateReq) returns (TdFirmUpdateResp)
+
+	@handler TdFirmDetail
+	get /detail (TdFirmDetailReq) returns (TdFirmDetailResp)
 }
 
