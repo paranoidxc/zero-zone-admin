@@ -2,6 +2,10 @@ package {{.pkgName}}
 
 import (
 	{{.imports}}
+   	"github.com/jinzhu/copier"
+   	"zero-zone/app/core/model"
+   	errorx2 "zero-zone/app/pkg/errorx"
+   	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type {{.logic}} struct {

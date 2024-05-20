@@ -499,6 +499,31 @@ func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailRe
 		pageLogicFile:    pageLogic,
 	}
 	for k, v := range fileList {
+		method := strings.ToTitle(strings.Replace(k, "LogicFile", "", -1))
+		method = "Create"
+		content, err := ioutil.ReadFile(k) // 读取文件内容
+		if err != nil {
+			fmt.Printf("读取文件%s失败：%v\n", k, err)
+			return err
+		}
+		oldString := fmt.Sprintf(`
+func (l *%v%vLogic) %v%v(req *types.%v%vReq) (resp *types.%v%vResp, err error) {
+	// todo: add your logic here and delete this line
+
+	return
+}
+`, name, method, name, method, name, method, name, method)
+
+		fmt.Println("oldString", oldString)
+
+		modifiedContent := strings.Replace(string(content), oldString, "", -1)
+		// 将修改后的内容写回文件
+		err = ioutil.WriteFile(k, []byte(modifiedContent), 0644)
+		if err != nil {
+			fmt.Println("无法写入文件:", err)
+			return err
+		}
+
 		// 向文件中追加内容
 		itemFileRaw, err := os.OpenFile(k, os.O_APPEND|os.O_WRONLY, 0644) // 打开文件并设置写入模式
 		if err != nil {
