@@ -104,7 +104,7 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	// 取第一个 所以第一个需要是主键
 	for i := 0; i < 1; i++ {
 		field := m.Field(i)
-		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
+		item := fmt.Sprintf(`%v []%v`, field.Name, field.Type)
 		tag := `form:"[]` + field.Tag.Get("json") + `"`
 		deletesContentRequest += (item + " `" + tag + "`" + "\n")
 	}
@@ -385,7 +385,6 @@ func goCtlGenFile() error {
 func editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson string, vueFields []map[string]string) error {
 	// 新增逻辑
 	createLogic := fmt.Sprintf(`
-
 func (l *%vCreateLogic) %vCreate(req *types.%vCreateReq) (resp *types.%vCreateResp, err error) {
 	var modelParams = new(model.%v)
 	err = copier.Copy(modelParams, req)
@@ -399,12 +398,10 @@ func (l *%vCreateLogic) %vCreate(req *types.%vCreateReq) (resp *types.%vCreateRe
 
 	return nil, nil
 }
-
 `, name, name, name, name, name, name)
 
 	// 删除逻辑
 	deleteLogic := fmt.Sprintf(`
-
 func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteReq) (resp *types.%vDeleteResp, err error) {
 	err = l.svcCtx.Sys%vModel.Delete(l.ctx, req.%v)
 	if err != nil {
@@ -413,25 +410,24 @@ func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteReq) (resp *types.%vDeleteRe
 
 	return nil, nil
 }
-
 `, name, name, name, name, name, primaryKeyName)
 
-	deletesLogic := fmt.Sprintf(`
-
-func (l *%vDeletesLogic) %vDeletes(req *types.%vDeletesReq) (resp *types.%vDeletesResp, err error) {
-	ids := strings.Split(req.%v, ",")
-	err = l.svcCtx.PublicDb.Where("%v in ?", ids).Delete(&model.%v{}).Error
-	resp = &types.%vDeletesResp{
-		%v: req.%v,
+	deletesLogic := fmt.Sprintf(`func (l *%vDeletesLogic) %vDeletes(req *types.%vDeletesReq) (resp *types.%vDeletesResp, err error) {
+	if len(req.%v) > 0  {
+		err = l.svcCtx.Sys%vModel.Deletes(l.ctx, req.%v)
+		if err != nil {
+			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+		}
+	} else {
+			return nil, errorx2.NewSystemError(errorx2.ParamErrorCode, err.Error())
 	}
-	return
-}
 
-`, name, name, name, name, primaryKeyName, primaryKeyJson, name, name, primaryKeyName, primaryKeyName)
+	return nil, nil
+}
+`, name, name, name, name, primaryKeyName, name, primaryKeyName)
 
 	// 修改逻辑
 	updateLogic := fmt.Sprintf(`
-
 func (l *%vUpdateLogic) %vUpdate(req *types.%vUpdateReq) (resp *types.%vUpdateResp, err error) {
 	modelParams := &model.%v{}
 	modelParams, err = l.svcCtx.Sys%vModel.FindOne(l.ctx, req.%v)
@@ -452,12 +448,10 @@ func (l *%vUpdateLogic) %vUpdate(req *types.%vUpdateReq) (resp *types.%vUpdateRe
 
 	return nil, nil
 }
-
 `, name, name, name, name, name, name, primaryKeyName, name)
 
 	// 详情逻辑
 	detailLogic := fmt.Sprintf(`
-
 func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailResp, err error) {
 	resp = &types.%vDetailResp{}
 	item := &model.%v{}
@@ -469,7 +463,6 @@ func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailRe
 	}
 	return
 }
-
 `, name, name, name, name, name, name, name, primaryKeyName)
 
 	// 列表逻辑
@@ -499,24 +492,56 @@ func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailRe
 		pageLogicFile:    pageLogic,
 	}
 	for k, v := range fileList {
-		method := strings.ToTitle(strings.Replace(k, "LogicFile", "", -1))
-		method = "Create"
 		content, err := ioutil.ReadFile(k) // 读取文件内容
 		if err != nil {
 			fmt.Printf("读取文件%s失败：%v\n", k, err)
 			return err
 		}
-		oldString := fmt.Sprintf(`
-func (l *%v%vLogic) %v%v(req *types.%v%vReq) (resp *types.%v%vResp, err error) {
-	// todo: add your logic here and delete this line
+		tmpMethods := []string{
+			"Create", "Update", "Detail", "Deletes", "Delete", "List", "Page",
+		}
+		method := ""
+		for _, _method := range tmpMethods {
+			contains := strings.Contains(k, _method)
+			if contains {
+				method = _method
+				break
+			}
+		}
+		methods := []string{
+			method,
+		}
 
-	return
-}
-`, name, method, name, method, name, method, name, method)
+		modifiedContent := string(content)
+		for _, method := range methods {
+			pattern := fmt.Sprintf(`func \(l \*%v%vLogic.* \{[\s\S]*?\}`, name, method)
+			regex := regexp.MustCompile(pattern)
+			modifiedContent = regex.ReplaceAllString(modifiedContent, "")
 
-		fmt.Println("oldString", oldString)
+			// 正则表达式模式
+			//pattern = `(\r?\n){4}`
+			//modifiedContent = regexp.MustCompile(pattern).ReplaceAllString(modifiedContent, "")
+			pattern = `(\r?\n){3}`
+			modifiedContent = regexp.MustCompile(pattern).ReplaceAllString(modifiedContent, "")
+		}
+		if method == "Delete" {
+			modifiedContent = strings.Replace(modifiedContent, `"github.com/jinzhu/copier"`, "", -1)
+			modifiedContent = strings.Replace(modifiedContent, `"zero-zone/app/core/model"`, "", -1)
+		}
+		if method == "Deletes" {
+			modifiedContent = strings.Replace(modifiedContent, `"github.com/jinzhu/copier"`, "", -1)
+			modifiedContent = strings.Replace(modifiedContent, `"zero-zone/app/core/model"`, "", -1)
+		}
+		if method == "Detail" {
+			modifiedContent = strings.Replace(modifiedContent, `errorx2 "zero-zone/app/pkg/errorx"`, "", -1)
+		}
+		if method == "List" {
+			modifiedContent = strings.Replace(modifiedContent, `"zero-zone/app/core/model"`, "", -1)
+		}
+		if method == "Page" {
+			modifiedContent = strings.Replace(modifiedContent, `"zero-zone/app/core/model"`, "", -1)
+		}
 
-		modifiedContent := strings.Replace(string(content), oldString, "", -1)
 		// 将修改后的内容写回文件
 		err = ioutil.WriteFile(k, []byte(modifiedContent), 0644)
 		if err != nil {

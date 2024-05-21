@@ -1,3 +1,4 @@
+
 func (l *{{ .Name }}ListLogic) {{ .Name }}List(req *types.{{ .Name }}ListReq) (resp *types.{{ .Name }}ListResp, err error) {
     where := " 1 "
     sys{{ .Name }}List, err := l.svcCtx.Sys{{ .Name }}Model.FindAllByWhere(l.ctx, where)

@@ -93,7 +93,7 @@ type TdFirmDeleteResp struct {
 }
 
 type TdFirmDeletesReq struct {
-	FirmId int64 `form:"[]firm_id"`
+	FirmId []int64 `form:"[]firm_id"`
 }
 
 type TdFirmDeletesResp struct {

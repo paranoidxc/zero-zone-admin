@@ -1,3 +1,4 @@
+
 func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageReq) (resp *types.{{ .Name }}PageResp, err error) {
     where := " 1 "
     sys{{ .Name }}Page, err := l.svcCtx.Sys{{ .Name }}Model.FindPageByWhere(l.ctx, where, req.Page, req.Limit)

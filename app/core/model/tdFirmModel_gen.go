@@ -30,6 +30,7 @@ type (
 		FindOne(ctx context.Context, firmId int64) (*TdFirm, error)
 		Update(ctx context.Context, data *TdFirm) error
 		Delete(ctx context.Context, firmId int64) error
+		Deletes(ctx context.Context, firmIds []int64) error
 		FindAllByWhere(ctx context.Context, where string) ([]*TdFirm, error)
 		FindAllByWhereCount(ctx context.Context, where string) (int64, error)
 		FindPageByWhere(ctx context.Context, where string, page int64, limit int64) ([]*TdFirm, error)
@@ -64,6 +65,19 @@ func (m *defaultTdFirmModel) Delete(ctx context.Context, firmId int64) error {
 		return conn.ExecCtx(ctx, query, firmId)
 	}, zeroZoneTdFirmFirmIdKey)
 	return err
+}
+
+func (m *defaultTdFirmModel) Deletes(ctx context.Context, firmIds []int64) error {
+	for _, firmId := range firmIds {
+		zeroZoneTdFirmFirmIdKey := fmt.Sprintf("%s%v", cacheZeroZoneTdFirmFirmIdPrefix, firmId)
+		_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+			query := fmt.Sprintf("delete from %s where `firm_id` = ?", m.table)
+			return conn.ExecCtx(ctx, query, firmId)
+		}, zeroZoneTdFirmFirmIdKey)
+		return err
+	}
+
+	return nil
 }
 
 func (m *defaultTdFirmModel) FindOne(ctx context.Context, firmId int64) (*TdFirm, error) {
