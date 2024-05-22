@@ -11,3 +11,4 @@ vendor/*
 download
 app/core/cmd/api/etc/core-api-localhost.yaml
 
+*.log
