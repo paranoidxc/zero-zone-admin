@@ -3,16 +3,16 @@
     <div class="">
       <el-form :model="tableSearchForm" inline>
         <el-form-item label="厂商名称">
-            <el-input v-model="searchForm.firmName" placeholder="" clearable />
+            <el-input v-model="tableSearchForm.firmName" placeholder="" clearable />
         </el-form-item>
         <el-form-item label="厂商别名">
-            <el-input v-model="searchForm.firmAlias" placeholder="" clearable />
+            <el-input v-model="tableSearchForm.firmAlias" placeholder="" clearable />
         </el-form-item>
         <el-form-item label="厂商编码">
-            <el-input v-model="searchForm.firmCode" placeholder="" clearable />
+            <el-input v-model="tableSearchForm.firmCode" placeholder="" clearable />
         </el-form-item>
         <el-form-item label="厂商描述">
-            <el-input v-model="searchForm.firmDesc" placeholder="" clearable />
+            <el-input v-model="tableSearchForm.firmDesc" placeholder="" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearchSubmit">
@@ -141,7 +141,7 @@ import { getCurrentInstance, proxyRefs } from "vue";
 
 const { proxy } = getCurrentInstance();
 
-import sysTableApi from "@/api/system/td_firm.js";
+import sysTableApi from "@/api/feat/td_firm.js";
 
 let tableSearchForm = $ref({});
 let tableData = $ref([]); // 表格数据

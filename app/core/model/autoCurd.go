@@ -1,5 +1,5 @@
 package model
 
-var ModelList = map[string]interface{}{
+var AutoCrudModelList = map[string]interface{}{
 	"TdFirm": TmpTdFirm{},
 }

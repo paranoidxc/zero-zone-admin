@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const BASE_API = "/admin/sys";
+const BASE_API = "/admin/feat";
 
 export default {
   all(query) {
@@ -31,9 +31,9 @@ export default {
       data,
     });
   },
-  view(id) {
+  detail(id) {
       return request({
-        url: BASE_API + "/view",
+        url: BASE_API + '/tdFirm/detail',
         method: "get",
         params: { id: id },
       });

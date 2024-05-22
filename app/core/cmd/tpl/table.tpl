@@ -134,7 +134,7 @@ import { getCurrentInstance, proxyRefs } from "vue";
 
 const { proxy } = getCurrentInstance();
 
-import sysTableApi from "@/api/system/{{ .UnderlineName }}.js";
+import sysTableApi from "@/api/feat/{{ .UnderlineName }}.js";
 
 let tableSearchForm = $ref({});
 let tableData = $ref([]); // 表格数据

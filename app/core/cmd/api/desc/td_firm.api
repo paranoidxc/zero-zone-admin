@@ -92,8 +92,8 @@ type TdFirmPageResp {
 }
 
 @server (
-	group:  sys/td_firm
-	prefix: /admin/sys/td_firm
+	group:  feat/td_firm
+	prefix: /admin/feat/tdFirm
 	jwt:    JwtAuth
 )
 service core-api {
@@ -104,16 +104,16 @@ service core-api {
 	get /page (TdFirmPageReq) returns (TdFirmPageResp)
 
 	@handler TdFirmCreate
-	post / (TdFirmCreateReq) returns (TdFirmCreateResp)
+	post /create (TdFirmCreateReq)
 
 	@handler TdFirmDelete
-	post / (TdFirmDeleteReq) returns (TdFirmDeleteResp)
+	post /delete (TdFirmDeleteReq)
 
 	@handler TdFirmDeletes
-	post / (TdFirmDeletesReq) returns (TdFirmDeletesResp)
+	post /deletes (TdFirmDeletesReq)
 
 	@handler TdFirmUpdate
-	post / (TdFirmUpdateReq) returns (TdFirmUpdateResp)
+	post /update (TdFirmUpdateReq)
 
 	@handler TdFirmDetail
 	get /detail (TdFirmDetailReq) returns (TdFirmDetailResp)

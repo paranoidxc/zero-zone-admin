@@ -22,7 +22,7 @@ type ServiceContext struct {
 	SysProfessionModel model.SysProfessionModel
 	SysDictionaryModel model.SysDictionaryModel
 	SysLogModel        model.SysLogModel
-	SysTdFirmModel     model.TdFirmModel
+	FeatTdFirmModel    model.TdFirmModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -43,6 +43,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		SysProfessionModel: model.NewSysProfessionModel(mysqlConn, c.Cache),
 		SysDictionaryModel: model.NewSysDictionaryModel(mysqlConn, c.Cache),
 		SysLogModel:        model.NewSysLogModel(mysqlConn, c.Cache),
-		SysTdFirmModel:     model.NewTdFirmModel(mysqlConn, c.Cache),
+		FeatTdFirmModel:    model.NewTdFirmModel(mysqlConn, c.Cache),
 	}
 }
