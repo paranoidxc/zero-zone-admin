@@ -17,22 +17,22 @@ import (
 	"zero-zone/app/core/model"
 )
 
-type AddAutoCurdLogic struct {
+type CreateAutoCurdLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
 // 新增
-func NewAddAutoCurdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddAutoCurdLogic {
-	return &AddAutoCurdLogic{
+func NewCreateAutoCurdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateAutoCurdLogic {
+	return &CreateAutoCurdLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *AddAutoCurdLogic) AddAutoCurd() error {
+func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	// todo: add your logic here and delete this line
 	// 获取结构体
 	reqModelName := "TdFirm"
@@ -129,14 +129,14 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
-		tag := `form:"` + field.Tag.Get("json") + ",option" + `"`
+		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
 		listContent += (item + " `" + tag + "`" + "\n")
 	}
 	// page request需要的字段
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
-		tag := `form:"` + field.Tag.Get("json") + ",option" + `"`
+		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
 		pageContent += (item + " `" + tag + "`" + "\n")
 	}
 
@@ -265,7 +265,6 @@ func getDetailResponse(name, content string) string {
 // 列表
 func getListRequest(name, listContent string) string {
 	return fmt.Sprintf(`type %vListReq {
-		PageReq
 		%v
 	}`, name, listContent)
 }
@@ -385,7 +384,7 @@ func goCtlGenFile() error {
 	return nil
 }
 
-func goCtlGenModelFile(l *AddAutoCurdLogic, underlineName string) error {
+func goCtlGenModelFile(l *CreateAutoCurdLogic, underlineName string) error {
 	// goctl生成文件
 	//url := `-url=" + l.svcCtx.Config.Mysql.DataSource
 	url := strings.Replace(l.svcCtx.Config.Mysql.DataSource, "?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai", "", -1)

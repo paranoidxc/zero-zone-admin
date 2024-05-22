@@ -9,15 +9,15 @@ import (
 )
 
 // 新增
-func AddAutoCurdHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func CreateAutoCurdHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		l := autocurd.NewAddAutoCurdLogic(r.Context(), svcCtx)
-		err := l.AddAutoCurd()
+		l := autocurd.NewCreateAutoCurdLogic(r.Context(), svcCtx)
+		err := l.CreateAutoCurd()
 		if err != nil {
 			response.Response(w, nil, err)
 			return
 		}
 
-		response.Response(w, nil, err)
+		response.Response(w, nil, nil)
 	}
 }

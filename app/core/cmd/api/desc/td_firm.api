@@ -66,11 +66,10 @@ type TdFirmDetailResp {
 }
 
 type TdFirmListReq {
-	PageReq
-	FirmName  *string `form:"firmName,option"`
-	FirmAlias *string `form:"firmAlias,option"`
-	FirmCode  *string `form:"firmCode,option"`
-	FirmDesc  *string `form:"firmDesc,option"`
+	FirmName  *string `form:"firmName,optional"`
+	FirmAlias *string `form:"firmAlias,optional"`
+	FirmCode  *string `form:"firmCode,optional"`
+	FirmDesc  *string `form:"firmDesc,optional"`
 }
 
 type TdFirmListResp {
@@ -80,10 +79,10 @@ type TdFirmListResp {
 
 type TdFirmPageReq {
 	PageReq
-	FirmName  *string `form:"firmName,option"`
-	FirmAlias *string `form:"firmAlias,option"`
-	FirmCode  *string `form:"firmCode,option"`
-	FirmDesc  *string `form:"firmDesc,option"`
+	FirmName  *string `form:"firmName,optional"`
+	FirmAlias *string `form:"firmAlias,optional"`
+	FirmCode  *string `form:"firmCode,optional"`
+	FirmDesc  *string `form:"firmDesc,optional"`
 }
 
 type TdFirmPageResp {
