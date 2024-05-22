@@ -7,13 +7,13 @@ func (l *{{ .Name }}ListLogic) {{ .Name }}List(req *types.{{ .Name }}ListReq) (r
 	}
 
 	var item types.{{ .Name }}
-	{{ .Name }}List := make([]*types.{{ .Name }}, 0)
+	{{ .Name }}List := make([]types.{{ .Name }}, 0)
 	for _, v := range feat{{ .Name }}List {
 		err := copier.Copy(&item, &v)
 		if err != nil {
 			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 		}
-		{{ .Name }}List = append({{ .Name }}List, &item)
+		{{ .Name }}List = append({{ .Name }}List, item)
 	}
 
 	return &types.{{ .Name }}ListResp{

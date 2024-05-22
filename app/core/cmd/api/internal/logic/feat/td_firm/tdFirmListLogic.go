@@ -8,7 +8,7 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
-	
+
 	errorx2 "zero-zone/app/pkg/errorx"
 )
 
@@ -27,20 +27,20 @@ func NewTdFirmListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TdFirm
 }
 
 func (l *TdFirmListLogic) TdFirmList(req *types.TdFirmListReq) (resp *types.TdFirmListResp, err error) {
-    where := " 1 "
-    featTdFirmList, err := l.svcCtx.FeatTdFirmModel.FindAllByWhere(l.ctx, where)
+	where := " 1 "
+	featTdFirmList, err := l.svcCtx.FeatTdFirmModel.FindAllByWhere(l.ctx, where)
 	if err != nil {
 		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
 	var item types.TdFirm
-	TdFirmList := make([]*types.TdFirm, 0)
+	TdFirmList := make([]types.TdFirm, 0)
 	for _, v := range featTdFirmList {
 		err := copier.Copy(&item, &v)
 		if err != nil {
 			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 		}
-		TdFirmList = append(TdFirmList, &item)
+		TdFirmList = append(TdFirmList, item)
 	}
 
 	return &types.TdFirmListResp{

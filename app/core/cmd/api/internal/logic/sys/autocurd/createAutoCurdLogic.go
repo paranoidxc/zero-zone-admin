@@ -92,7 +92,7 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	for i := 0; i < 1; i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
-		tag := `form:"` + field.Tag.Get("json") + `"`
+		tag := `json:"` + field.Tag.Get("json") + `"`
 		deleteContentRequest += (item + " `" + tag + "`" + "\n")
 	}
 	// delete Response需要的字段
@@ -108,7 +108,7 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	for i := 0; i < 1; i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v []%v`, field.Name, field.Type)
-		tag := `form:"[]` + field.Tag.Get("json") + `"`
+		tag := `json:"[]` + field.Tag.Get("json") + `"`
 		deletesContentRequest += (item + " `" + tag + "`" + "\n")
 	}
 	// deletes Response需要的字段
@@ -185,16 +185,17 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	res += ServerContent + "\n"
 
 	// 生成.api文件
+	fmt.Println(primaryKeyName)
 	err := createApiFile(underlineName, res)
 	// 将.api文件加入总的api文件
-	err = addApiFile(underlineName)
+	//err = addApiFile(underlineName)
 	// 运行goctl命令生成代码
-	err = goCtlGenFile()
-	err = goCtlGenModelFile(l, underlineName)
+	//err = goCtlGenFile()
+	//err = goCtlGenModelFile(l, underlineName)
 	// 编辑logic文件
-	err = editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson, vueFields)
+	//err = editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson, vueFields)
 	// 生成前端文件
-	err = genWebApiFile(underlineName, lowerCaseName)
+	err = genWebApiFile(underlineName, lowerCaseName, primaryKeyJson)
 	err = genWebVueFile(name, underlineName, primaryKeyJson, vueFields)
 	//resp = &types.Empty{}
 	if err != nil {
@@ -272,7 +273,7 @@ func getListResponse(name string) string {
 	tag_list := "`" + "json:" + `"list"` + "`"
 	tag_total := "`" + "json:" + `"total"` + "`"
 	return fmt.Sprintf(`type %vListResp {
-		List  []*%v %v
+		List  []%v %v
 		Total int64   %v                         
 	}`, name, name, tag_list, tag_total)
 }
@@ -288,7 +289,7 @@ func getPageResponse(name string) string {
 	tag_list := "`" + "json:" + `"list"` + "`"
 	tag_pagination := "`" + "json:" + `"pagination"` + "`"
 	return fmt.Sprintf(`type %vPageResp {
-		List  []*%v %v
+		List  []%v %v
 		Pagination Pagination   %v                         
 	}`, name, name, tag_list, tag_pagination)
 }
@@ -624,7 +625,7 @@ func getPageLogic(name string, vueFields []map[string]string) (string, error) {
 	return tplBuffer.String(), nil
 }
 
-func genWebApiFile(underlineName, lowerCaseName string) error {
+func genWebApiFile(underlineName, lowerCaseName, primaryKeyJson string) error {
 	projectWd, _ := os.Getwd()
 	// ../../ cmd
 	fileDir := filepath.Join(projectWd, "../../../../web")
@@ -639,7 +640,14 @@ func genWebApiFile(underlineName, lowerCaseName string) error {
 	apiFile, err := os.Create(fileDir + "/src/api/feat/" + underlineName + ".js")
 	fmt.Println("api file", fileDir+"/src/api/feat/"+underlineName+".js")
 	defer apiFile.Close()
-	err = tpl.Execute(apiFile, lowerCaseName)
+
+	data := map[string]interface{}{
+		"UnderlineName":  underlineName,
+		"PrimaryKeyJson": primaryKeyJson,
+		"LowerCaseName":  lowerCaseName,
+	}
+
+	err = tpl.Execute(apiFile, data)
 	if err != nil {
 		return err
 	}

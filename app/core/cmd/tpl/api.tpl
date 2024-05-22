@@ -5,49 +5,49 @@ const BASE_API = "/admin/feat";
 export default {
   all(query) {
     return request({
-      url: BASE_API + '/{{ . }}/all',
+      url: BASE_API + '/{{ .LowerCaseName }}/all',
       method: "get",
       params: query,
     });
   },
   page(query) {
     return request({
-      url: BASE_API + '/{{ . }}/page',
+      url: BASE_API + '/{{ .LowerCaseName }}/page',
       method: "get",
       params: query,
     });
   },
   create(data) {
     return request({
-      url: BASE_API + '/{{ . }}/create',
+      url: BASE_API + '/{{ .LowerCaseName }}/create',
       method: "post",
       data,
     });
   },
   update(data) {
     return request({
-      url: BASE_API + '/{{ . }}/update',
+      url: BASE_API + '/{{ .LowerCaseName }}/update',
       method: "post",
       data,
     });
   },
   detail(id) {
       return request({
-        url: BASE_API + '/{{ . }}/detail',
+        url: BASE_API + '/{{ .LowerCaseName }}/detail',
         method: "get",
-        params: { id: id },
+        params: { {{ .PrimaryKeyJson }}: id },
       });
   },
   delete(id) {
     return request({
-      url: BASE_API + '/{{ . }}/delete',
+      url: BASE_API + '/{{ .LowerCaseName }}/delete',
       method: "post",
-      data: { id: id },
+      data: { {{ .PrimaryKeyJson }}: id },
     });
   },
   deletes(ids) {
     return request({
-      url: BASE_API + '/{{ . }}/deletes',
+      url: BASE_API + '/{{ .LowerCaseName }}/deletes',
       method: "post",
       data: { ids: ids },
     });

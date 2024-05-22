@@ -35,14 +35,14 @@ export default {
       return request({
         url: BASE_API + '/tdFirm/detail',
         method: "get",
-        params: { id: id },
+        params: { firmId: id },
       });
   },
   delete(id) {
     return request({
       url: BASE_API + '/tdFirm/delete',
       method: "post",
-      data: { id: id },
+      data: { firmId: id },
     });
   },
   deletes(ids) {

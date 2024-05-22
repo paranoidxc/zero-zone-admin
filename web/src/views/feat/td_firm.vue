@@ -58,14 +58,15 @@
       border
     >
       <el-table-column fixed type="selection" width="55" />
-      <el-table-column fixed prop="id" label="编号" width="60" />
-      <el-table-column fixed prop="name" label="名称" width="100" />
-      <el-table-column prop="orderNum" label="排序值" width="100" />
+      <el-table-column fixed prop="firmId" label="ID" width="60" />
+      <el-table-column prop="firmName" label="厂商名称" width="60" />
+      <el-table-column prop="firmAlias" label="厂商别名" width="60" />
+      <el-table-column prop="firmCode" label="厂商编码" width="60" />
+      <el-table-column prop="firmDesc" label="厂商描述" width="60" />
       <el-table-column prop="status" label="状态" width="60">
         <template #default="scope">
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" width="" />
       <el-table-column fixed="right" label="操作" width="160">
         <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.row)">
@@ -84,7 +85,7 @@
 
     <el-pagination
       background
-      style="display: flex; justify-content: center; margin-top: 10px"
+      style="display: flex; justify-content: right; margin-top: 10px"
       v-model:current-page="curPage"
       v-model:page-size="limit"
       :page-sizes="[limit, 10, 20, 50, 100, 200, 300, 400, 500]"
@@ -107,10 +108,19 @@
           label="编号"
           :label-width="80"
         >
-          <el-input v-model="tableForm.id" autocomplete="off" />
+            <el-input v-model="tableForm.id" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="名称" :label-width="80">
-          <el-input v-model="tableForm.name" autocomplete="off" />
+        <el-form-item label="厂商名称">
+            <el-input v-model="tableForm.firmName" placeholder="" clearable />
+        </el-form-item>
+        <el-form-item label="厂商别名">
+            <el-input v-model="tableForm.firmAlias" placeholder="" clearable />
+        </el-form-item>
+        <el-form-item label="厂商编码">
+            <el-input v-model="tableForm.firmCode" placeholder="" clearable />
+        </el-form-item>
+        <el-form-item label="厂商描述">
+            <el-input v-model="tableForm.firmDesc" placeholder="" clearable />
         </el-form-item>
 
         <el-form-item label="状态" :label-width="80">
@@ -151,8 +161,8 @@ let tableForm = $ref({
 let dialogFormVisible = $ref(false);
 let dialogType = $ref("add");
 let multipleSelection = $ref([]);
-let limit = $ref(2);
-let total = $ref(15);
+let limit = $ref(10);
+let total = $ref(0);
 let curPage = $ref(1);
 
 const statusOptions = [
@@ -174,16 +184,30 @@ const getStatusLabel = (idx) => {
   }
 };
 
+//查询
+const onSearchSubmit = async () => {
+  tableSearchForm.page = 1;
+  tableSearchForm.limit = limit;
+
+  sysTableApi.page(tableSearchForm).then((res) => {
+    if (res.code === 200) {
+      tableData = res.data.list;
+      curPage = res.data.pagination.page;
+      total = res.data.pagination.page;
+    }
+  });
+};
+
 /* 请求分页 */
-const getTableDataList = async (cur = 1, limit = 2) => {
+const getTableDataList = async (cur, limit) => {
   let result = await sysTableApi.page({ page: cur, limit: limit });
   if (result.code == 200) {
     tableData = result.data.list;
-    curPage = result.data.page;
-    total = result.data.total;
+    curPage = res.data.pagination.page;
+    total = res.data.pagination.page;
   }
 };
-getTableDataList();
+getTableDataList(1, limit);
 
 const handleSizeChange = (val) => {
   limit = val;
@@ -199,9 +223,9 @@ const reqRowDel = async (id) => {
   await sysTableApi.delete(id);
 };
 
-const handleRowDel = async (id) => {
-  await sysTableApi.delete(id);
-  await getTableDataList(curPage);
+const handleRowDel = async (row) => {
+  await sysTableApi.delete(row.firmId);
+  await getTableDataList(curPage, limit);
 };
 
 const handleDelList = async() => {
@@ -209,22 +233,26 @@ const handleDelList = async() => {
 	reqRowDel(id)
   });
   multipleSelection = [];
-  await getTableDataList(curPage);
+  await getTableDataList(curPage, limit);
 };
 
 // 选中
 const handleSelectionChange = (val) => {
   multipleSelection = [];
   val.forEach((item) => {
-    multipleSelection.push(item.id);
+    multipleSelection.push(item.firmId);
   });
 };
 
 // 编辑
-const handleEdit = (row) => {
+const handleEdit = async (row) => {
   dialogFormVisible = true;
   dialogType = "edit";
-  tableForm = { ...row };
+
+  let result = await sysTableApi.detail(row.firmId);
+  if (result.code == 200) {
+    tableForm = { ...result.data };
+  }
 };
 
 // 新增
@@ -234,20 +262,6 @@ const handleCreate = () => {
     status: 1,
   };
   dialogType = "create";
-};
-
-//查询
-const onSearchSubmit = async () => {
-  tableSearchForm.page = 1;
-  tableSearchForm.limit = limit;
-
-  sysTableApi.listPage(tableSearchForm).then((res) => {
-    if (res.code === 200) {
-      tableData = res.data.list;
-      curPage = res.data.page;
-      total = res.data.total;
-    }
-  });
 };
 
 // 确认
@@ -261,7 +275,7 @@ const dialogConfirm = async () => {
       .then((res) => {
         if (res.code == 200) {
           dialogFormVisible = false;
-          getTableDataList(curPage);
+          getTableDataList(curPage, limit);
         }
       })
       .catch(() => {
@@ -272,7 +286,7 @@ const dialogConfirm = async () => {
     sysTableApi.update(tableForm).then((res) => {
       if (res.code == 200) {
         dialogFormVisible = false;
-        getTableDataList(curPage);
+        getTableDataList(curPage, limit);
       }
     });
   }

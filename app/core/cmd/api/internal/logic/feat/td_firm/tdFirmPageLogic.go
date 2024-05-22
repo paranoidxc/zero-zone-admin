@@ -8,7 +8,7 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
-	
+
 	errorx2 "zero-zone/app/pkg/errorx"
 )
 
@@ -27,35 +27,35 @@ func NewTdFirmPageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TdFirm
 }
 
 func (l *TdFirmPageLogic) TdFirmPage(req *types.TdFirmPageReq) (resp *types.TdFirmPageResp, err error) {
-    where := " 1 "
-    featTdFirmPage, err := l.svcCtx.FeatTdFirmModel.FindPageByWhere(l.ctx, where, req.Page, req.Limit)
+	where := " 1 "
+	featTdFirmPage, err := l.svcCtx.FeatTdFirmModel.FindPageByWhere(l.ctx, where, req.Page, req.Limit)
 	if err != nil {
 		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
 	var item types.TdFirm
-	TdFirmPage := make([]*types.TdFirm, 0)
+	TdFirmPage := make([]types.TdFirm, 0)
 	for _, v := range featTdFirmPage {
 		err := copier.Copy(&item, &v)
 		if err != nil {
 			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 		}
-		TdFirmPage = append(TdFirmPage, &item)
+		TdFirmPage = append(TdFirmPage, item)
 	}
 
 	total, err := l.svcCtx.FeatTdFirmModel.FindPageByWhereCount(l.ctx, where)
-    if err != nil {
-         return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
-    }
+	if err != nil {
+		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+	}
 
-    pagination := types.Pagination{
-         Page:  req.Page,
-         Limit: req.Limit,
-         Total: total,
-    }
+	pagination := types.Pagination{
+		Page:  req.Page,
+		Limit: req.Limit,
+		Total: total,
+	}
 
 	return &types.TdFirmPageResp{
-		List: TdFirmPage,
-   		Pagination: pagination,
+		List:       TdFirmPage,
+		Pagination: pagination,
 	}, nil
 }

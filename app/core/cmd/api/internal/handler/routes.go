@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	feattd_firm "zero-zone/app/core/cmd/api/internal/handler/feat/td_firm"
-	sysautocurd "zero-zone/app/core/cmd/api/internal/handler/sys/autocurd"
 	"zero-zone/app/core/cmd/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -52,18 +51,5 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
 		rest.WithPrefix("/admin/feat/tdFirm"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				// 新增
-				Method:  http.MethodPost,
-				Path:    "/create",
-				Handler: sysautocurd.CreateAutoCurdHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
-		rest.WithPrefix("/admin/sys/autocurd"),
 	)
 }

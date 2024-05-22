@@ -24,7 +24,7 @@ JwtAuth:
   AccessExpire: 86400000000
 
 Mysql:
-  DataSource: root:fucking@tcp(127.0.0.1:13307)/zero_zone?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: root:fucking@tcp(127.0.0.1:13306)/zero_zone?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 
 Cache:
   - Host: 127.0.0.1:6380

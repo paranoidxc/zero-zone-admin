@@ -3,6 +3,7 @@ package handler
 
 import (
 	"net/http"
+	sysautocurd "zero-zone/app/core/cmd/api/internal/handler/sys/autocurd"
 
 	configdict "zero-zone/app/core/cmd/api/internal/handler/config/dict"
 	loglogin "zero-zone/app/core/cmd/api/internal/handler/log/login"
@@ -19,6 +20,19 @@ import (
 )
 
 func OldRegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 新增
+				Method:  http.MethodPost,
+				Path:    "/create",
+				Handler: sysautocurd.CreateAutoCurdHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+		rest.WithPrefix("/admin/sys/autocurd"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{

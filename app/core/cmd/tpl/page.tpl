@@ -7,13 +7,13 @@ func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageReq) (r
 	}
 
 	var item types.{{ .Name }}
-	{{ .Name }}Page := make([]*types.{{ .Name }}, 0)
+	{{ .Name }}Page := make([]types.{{ .Name }}, 0)
 	for _, v := range feat{{ .Name }}Page {
 		err := copier.Copy(&item, &v)
 		if err != nil {
 			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 		}
-		{{ .Name }}Page = append({{ .Name }}Page, &item)
+		{{ .Name }}Page = append({{ .Name }}Page, item)
 	}
 
 	total, err := l.svcCtx.Feat{{ .Name }}Model.FindPageByWhereCount(l.ctx, where)

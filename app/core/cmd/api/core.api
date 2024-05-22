@@ -26,7 +26,7 @@ import (
 	//"desc/log/log.api"
 	// 日志管理模块
 	//"desc/cronjob.api"
-	"desc/autocurd.api"
+	//"desc/autocurd.api"
 )
 
 import "desc/td_firm.api"

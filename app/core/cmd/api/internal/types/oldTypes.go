@@ -504,3 +504,9 @@ type LogLoginPageResp struct {
 	List       []LogLogin `json:"list"`
 	Pagination Pagination `json:"pagination"`
 }
+
+type AutoCurd struct {
+	Id    int64  `json:"id"`
+	Uuid  string `json:"uuid"`
+	Title string `json:"title"`
+}

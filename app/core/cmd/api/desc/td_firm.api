@@ -22,7 +22,7 @@ type TdFirmCreateResp {
 }
 
 type TdFirmDeleteReq {
-	FirmId int64 `form:"firmId"`
+	FirmId int64 `json:"firmId"`
 }
 
 type TdFirmDeleteResp {
@@ -30,7 +30,7 @@ type TdFirmDeleteResp {
 }
 
 type TdFirmDeletesReq {
-	FirmId []int64 `form:"[]firmId"`
+	FirmId []int64 `json:"[]firmId"`
 }
 
 type TdFirmDeletesResp {
@@ -54,7 +54,7 @@ type TdFirmUpdateResp {
 }
 
 type TdFirmDetailReq {
-	FirmId int64 `form:"firmId"`
+	FirmId int64 `json:"firmId"`
 }
 
 type TdFirmDetailResp {
@@ -73,8 +73,8 @@ type TdFirmListReq {
 }
 
 type TdFirmListResp {
-	List  []*TdFirm `json:"list"`
-	Total int64     `json:"total"`
+	List  []TdFirm `json:"list"`
+	Total int64    `json:"total"`
 }
 
 type TdFirmPageReq {
@@ -86,7 +86,7 @@ type TdFirmPageReq {
 }
 
 type TdFirmPageResp {
-	List       []*TdFirm  `json:"list"`
+	List       []TdFirm   `json:"list"`
 	Pagination Pagination `json:"pagination"`
 }
 
