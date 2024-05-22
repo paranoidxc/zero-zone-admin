@@ -74,7 +74,9 @@ func (m *defaultTdFirmModel) Deletes(ctx context.Context, firmIds []int64) error
 			query := fmt.Sprintf("delete from %s where `firm_id` = ?", m.table)
 			return conn.ExecCtx(ctx, query, firmId)
 		}, zeroZoneTdFirmFirmIdKey)
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

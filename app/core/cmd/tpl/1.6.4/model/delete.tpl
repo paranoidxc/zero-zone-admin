@@ -26,7 +26,9 @@ func (m *default{{.upperStartCamelObject}}Model) Deletes(ctx context.Context, {{
 		return conn.ExecCtx(ctx, query, {{.lowerStartCamelPrimaryKey}})
 	}, {{.keyValues}}){{else}}query := fmt.Sprintf("delete from %s where {{.originalPrimaryKey}} = {{if .postgreSql}}$1{{else}}?{{end}}", m.table)
 		_,err:=m.conn.ExecCtx(ctx, query, {{.lowerStartCamelPrimaryKey}}){{end}}
-	return err
+	    if err != nil {
+		    return err
+        }
 	}
 
 	return nil

@@ -46,7 +46,7 @@ type TdFirmDeleteResp struct {
 }
 
 type TdFirmDeletesReq struct {
-	FirmId []int64 `json:"[]firmId"`
+	FirmId []int64 `json:"firmId"`
 }
 
 type TdFirmDeletesResp struct {

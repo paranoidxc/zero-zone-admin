@@ -215,9 +215,12 @@ const handleRowDel = async (row) => {
 };
 
 const handleDelList = async() => {
+  /*
   multipleSelection.forEach((id) => {
 	reqRowDel(id)
   });
+  */
+  await sysTableApi.deletes(multipleSelection);
   multipleSelection = [];
   await getTableDataList(curPage, limit);
 };

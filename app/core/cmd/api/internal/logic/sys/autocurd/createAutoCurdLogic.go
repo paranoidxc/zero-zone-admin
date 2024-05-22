@@ -108,7 +108,7 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	for i := 0; i < 1; i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v []%v`, field.Name, field.Type)
-		tag := `json:"[]` + field.Tag.Get("json") + `"`
+		tag := `json:"` + field.Tag.Get("json") + `"`
 		deletesContentRequest += (item + " `" + tag + "`" + "\n")
 	}
 	// deletes Response需要的字段
