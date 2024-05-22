@@ -17,27 +17,27 @@ import (
 	"zero-zone/app/core/model"
 )
 
-type AddAutoCurdLogic struct {
+type CreateAutoCurdLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
 // 新增
-func NewAddAutoCurdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddAutoCurdLogic {
-	return &AddAutoCurdLogic{
+func NewCreateAutoCurdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateAutoCurdLogic {
+	return &CreateAutoCurdLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *AddAutoCurdLogic) AddAutoCurd() error {
+func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	// todo: add your logic here and delete this line
 	// 获取结构体
 	reqModelName := "TdFirm"
 	var modelStruct interface{}
-	for k, v := range model.ModelList {
+	for k, v := range model.AutoCrudModelList {
 		if k == reqModelName {
 			modelStruct = v
 		}
@@ -49,10 +49,12 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	name = strings.Replace(name, "Tmp", "", -1)
 	fmt.Println("结构体名称", name)
 
+	underlineName := GetUnderlineWord(name)
+	lowerCaseName := strings.ToLower(name[:1]) + name[1:]
+
 	// 主键名字
 	primaryKeyName := m.Field(0).Name
 	primaryKeyJson := m.Field(0).Tag.Get("json")
-	underlineName := GetUnderlineWord(name)
 
 	createStruct := ""
 	createContent := ""
@@ -69,11 +71,12 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	// struct需要的字段
 	for i := 0; i < m.NumField(); i++ {
 		field := m.Field(i)
+		fmt.Printf("field %+v\n", field)
 		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
 		tag := `json:"` + field.Tag.Get("json") + `"`
 		createStruct += (item + " `" + tag + "`" + "\n")
 	}
-	logx.Info("createContent", createContent)
+	fmt.Println("createStruct", createStruct)
 
 	// create需要的字段
 	for i := 1; i < m.NumField(); i++ {
@@ -126,14 +129,14 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
-		tag := `form:"` + field.Tag.Get("json") + ",option" + `"`
+		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
 		listContent += (item + " `" + tag + "`" + "\n")
 	}
 	// page request需要的字段
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
 		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
-		tag := `form:"` + field.Tag.Get("json") + ",option" + `"`
+		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
 		pageContent += (item + " `" + tag + "`" + "\n")
 	}
 
@@ -161,7 +164,7 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	ListResponse := getListResponse(name)
 	PageRequest := getPageRequest(name, pageContent)
 	PageResponse := getPageResponse(name)
-	ServerContent := getServerContent(name, underlineName)
+	ServerContent := getServerContent(name, underlineName, lowerCaseName)
 
 	res := ""
 	res += CreateStruct + "\n"
@@ -187,11 +190,11 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	err = addApiFile(underlineName)
 	// 运行goctl命令生成代码
 	err = goCtlGenFile()
+	err = goCtlGenModelFile(l, underlineName)
 	// 编辑logic文件
 	err = editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson, vueFields)
-	return nil
 	// 生成前端文件
-	err = genWebApiFile(underlineName)
+	err = genWebApiFile(underlineName, lowerCaseName)
 	err = genWebVueFile(name, underlineName, primaryKeyJson, vueFields)
 	//resp = &types.Empty{}
 	if err != nil {
@@ -262,7 +265,6 @@ func getDetailResponse(name, content string) string {
 // 列表
 func getListRequest(name, listContent string) string {
 	return fmt.Sprintf(`type %vListReq {
-		PageReq
 		%v
 	}`, name, listContent)
 }
@@ -291,13 +293,13 @@ func getPageResponse(name string) string {
 	}`, name, name, tag_list, tag_pagination)
 }
 
-func getServerContent(name, underlineName string) string {
+func getServerContent(name, underlineName, lowerCaseName string) string {
 
 	return fmt.Sprintf(`
 
 @server(
-	group: sys/%v
-	prefix: /admin/sys/%v
+	group: feat/%v
+	prefix: /admin/feat/%v
 	jwt:        JwtAuth
 )
 
@@ -309,22 +311,22 @@ service core-api {
 	get /page(%vPageReq) returns (%vPageResp)
 
 	@handler %vCreate
-	post /(%vCreateReq) returns (%vCreateResp)
+	post /create(%vCreateReq)
 	
 	@handler %vDelete
-	post /(%vDeleteReq) returns (%vDeleteResp)
+	post /delete(%vDeleteReq)
 	
 	@handler %vDeletes
-	post /(%vDeletesReq) returns (%vDeletesResp)
+	post /deletes(%vDeletesReq)
 
 	@handler %vUpdate
-	post /(%vUpdateReq) returns (%vUpdateResp)
+	post /update(%vUpdateReq)
 	
 	@handler %vDetail
 	get /detail(%vDetailReq) returns (%vDetailResp)
 }
 
-`, underlineName, underlineName, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name)
+`, underlineName, lowerCaseName, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name, name)
 }
 
 func createApiFile(underlineName, res string) error {
@@ -382,80 +384,96 @@ func goCtlGenFile() error {
 	return nil
 }
 
+func goCtlGenModelFile(l *CreateAutoCurdLogic, underlineName string) error {
+	// goctl生成文件
+	//url := `-url=" + l.svcCtx.Config.Mysql.DataSource
+	url := strings.Replace(l.svcCtx.Config.Mysql.DataSource, "?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai", "", -1)
+	//table := "-table=\"" + underlineName + "\""
+	//cmdArgs := []string{"model", "mysql", "datasource", url, table, `-dir="../../model"`, "--style", "goZero", "--home", "../tpl"}
+	//cmdArgs := []string{"model", "mysql", "datasource", url, table, "-dir", ".", "-cache", "true", "--style", "goZero", "--home", "../tpl"}
+	cmdArgs := []string{"model", "mysql", "datasource", "-url", url, "-table", underlineName, "-dir", "../../model", "-cache", "true", "--style", "goZero", "--home", "../tpl"}
+	fmt.Println("go model:", strings.Join(cmdArgs, " "))
+	c := cmd.NewCmd("goctl", cmdArgs...)
+	fmt.Println("okkkkkk")
+	<-c.Start()
+	return nil
+}
+
 func editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson string, vueFields []map[string]string) error {
 	// 新增逻辑
 	createLogic := fmt.Sprintf(`
-func (l *%vCreateLogic) %vCreate(req *types.%vCreateReq) (resp *types.%vCreateResp, err error) {
+func (l *%vCreateLogic) %vCreate(req *types.%vCreateReq) (err error) {
 	var modelParams = new(model.%v)
 	err = copier.Copy(modelParams, req)
 	if err != nil {
-		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+		return errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
-	_, err = l.svcCtx.Sys%vModel.Insert(l.ctx, modelParams)
+	_, err = l.svcCtx.Feat%vModel.Insert(l.ctx, modelParams)
 	if err != nil {
-		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+		return errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
-	return nil, nil
+	return
 }
-`, name, name, name, name, name, name)
+`, name, name, name, name, name)
 
 	// 删除逻辑
 	deleteLogic := fmt.Sprintf(`
-func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteReq) (resp *types.%vDeleteResp, err error) {
-	err = l.svcCtx.Sys%vModel.Delete(l.ctx, req.%v)
+func (l *%vDeleteLogic) %vDelete(req *types.%vDeleteReq) (err error) {
+	err = l.svcCtx.Feat%vModel.Delete(l.ctx, req.%v)
 	if err != nil {
-		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+		return errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
-	return nil, nil
+	return
 }
-`, name, name, name, name, name, primaryKeyName)
+`, name, name, name, name, primaryKeyName)
 
-	deletesLogic := fmt.Sprintf(`func (l *%vDeletesLogic) %vDeletes(req *types.%vDeletesReq) (resp *types.%vDeletesResp, err error) {
+	deletesLogic := fmt.Sprintf(`
+func (l *%vDeletesLogic) %vDeletes(req *types.%vDeletesReq) (err error) {
 	if len(req.%v) > 0  {
-		err = l.svcCtx.Sys%vModel.Deletes(l.ctx, req.%v)
+		err = l.svcCtx.Feat%vModel.Deletes(l.ctx, req.%v)
 		if err != nil {
-			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+			return  errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 		}
 	} else {
-			return nil, errorx2.NewSystemError(errorx2.ParamErrorCode, err.Error())
+		return errorx2.NewSystemError(errorx2.ParamErrorCode, err.Error())
 	}
 
-	return nil, nil
+	return
 }
-`, name, name, name, name, primaryKeyName, name, primaryKeyName)
+`, name, name, name, primaryKeyName, name, primaryKeyName)
 
 	// 修改逻辑
 	updateLogic := fmt.Sprintf(`
-func (l *%vUpdateLogic) %vUpdate(req *types.%vUpdateReq) (resp *types.%vUpdateResp, err error) {
+func (l *%vUpdateLogic) %vUpdate(req *types.%vUpdateReq) (err error) {
 	modelParams := &model.%v{}
-	modelParams, err = l.svcCtx.Sys%vModel.FindOne(l.ctx, req.%v)
+	modelParams, err = l.svcCtx.Feat%vModel.FindOne(l.ctx, req.%v)
 	if err != nil {
-		return nil, errorx2.NewDefaultError(errorx2.UserIdErrorCode)
+		return errorx2.NewDefaultError(errorx2.UserIdErrorCode)
 	}
 
 	err = copier.Copy(modelParams, req)
 	if err != nil {
 		logx.Error("复制参数失败", err)
-		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+		return errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
-	err = l.svcCtx.Sys%vModel.Update(l.ctx, modelParams)
+	err = l.svcCtx.Feat%vModel.Update(l.ctx, modelParams)
 	if err != nil {
-		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
+		return errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
-	return nil, nil
+	return
 }
-`, name, name, name, name, name, name, primaryKeyName, name)
+`, name, name, name, name, name, primaryKeyName, name)
 
 	// 详情逻辑
 	detailLogic := fmt.Sprintf(`
 func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailResp, err error) {
 	resp = &types.%vDetailResp{}
 	item := &model.%v{}
-	item, err = l.svcCtx.Sys%vModel.FindOne(l.ctx, req.%v)
+	item, err = l.svcCtx.Feat%vModel.FindOne(l.ctx, req.%v)
 	err = copier.Copy(resp, item)
 	if err != nil {
 		logx.Error("复制结果失败", err)
@@ -474,13 +492,13 @@ func (l *%vDetailLogic) %vDetail(req *types.%vDetailReq) (resp *types.%vDetailRe
 	// 生成存放的文件路径
 	fileName := strings.ToLower(name)
 	projectWd, _ := os.Getwd()
-	createLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"CreateLogic.go")
-	deleteLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"DeleteLogic.go")
-	deletesLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"DeletesLogic.go")
-	updateLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"UpdateLogic.go")
-	detailLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"DetailLogic.go")
-	listLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"ListLogic.go")
-	pageLogicFile := filepath.Join(projectWd, "./internal/logic/sys/"+underlineName+"/", fileName+"PageLogic.go")
+	createLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"CreateLogic.go")
+	deleteLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"DeleteLogic.go")
+	deletesLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"DeletesLogic.go")
+	updateLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"UpdateLogic.go")
+	detailLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"DetailLogic.go")
+	listLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"ListLogic.go")
+	pageLogicFile := filepath.Join(projectWd, "./internal/logic/feat/"+underlineName+"/", fileName+"PageLogic.go")
 
 	fileList := map[string]string{
 		createLogicFile:  createLogic,
@@ -606,34 +624,38 @@ func getPageLogic(name string, vueFields []map[string]string) (string, error) {
 	return tplBuffer.String(), nil
 }
 
-func genWebApiFile(underlineName string) error {
+func genWebApiFile(underlineName, lowerCaseName string) error {
 	projectWd, _ := os.Getwd()
-	fileDir := filepath.Join(projectWd, "../../")
-	file := filepath.Join(projectWd, "../../sources/template/api.tpl")
+	// ../../ cmd
+	fileDir := filepath.Join(projectWd, "../../../../web")
+	file := filepath.Join(projectWd, "../tpl/api.tpl")
+	fmt.Println("api tpl file", file)
 	tpl, err := template.ParseFiles(file)
 
 	if err != nil {
 		fmt.Println("create template failed, err:", err)
 		return err
 	}
-	apiFile, err := os.Create(fileDir + "./sources/temp/" + underlineName + ".ts")
+	apiFile, err := os.Create(fileDir + "/src/api/feat/" + underlineName + ".js")
+	fmt.Println("api file", fileDir+"/src/api/feat/"+underlineName+".js")
 	defer apiFile.Close()
-	err = tpl.Execute(apiFile, underlineName)
+	err = tpl.Execute(apiFile, lowerCaseName)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
 func genWebVueFile(name, underlineName, primaryKeyJson string, vueFields interface{}) error {
 	projectWd, _ := os.Getwd()
-	fileDir := filepath.Join(projectWd, "../../")
-	filePath := filepath.Join(projectWd, "../../sources/template/table.tpl")
+	fileDir := filepath.Join(projectWd, "../../../../web")
+	filePath := filepath.Join(projectWd, "../tpl/table.tpl")
 	tpl, err := template.ParseFiles(filePath)
 	if err != nil {
 		fmt.Println("create template failed, err:", err)
 		return err
 	}
-	file, err := os.Create(fileDir + "./sources/temp/" + underlineName + ".vue")
+	file, err := os.Create(fileDir + "/src/views/feat/" + underlineName + ".vue")
 	defer file.Close()
 	data := map[string]interface{}{
 		"Name":           name,

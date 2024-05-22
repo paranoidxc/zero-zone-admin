@@ -27,6 +27,7 @@ func main() {
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)
+	handler.OldRegisterHandlers(server, ctx)
 	handler.RegisterHandlers(server, ctx)
 
 	// 自定义错误

@@ -2,11 +2,18 @@
   <div style="margin: 20px">
     <div class="">
       <el-form :model="tableSearchForm" inline>
-        {{- range $i, $v := .VueFields }}
-        <el-form-item label="{{ $v.Label }}">
-            <el-input v-model="tableSearchForm.{{ $v.Key }}" placeholder="" clearable />
+        <el-form-item label="厂商名称">
+            <el-input v-model="tableSearchForm.firmName" placeholder="" clearable />
         </el-form-item>
-        {{- end }}
+        <el-form-item label="厂商别名">
+            <el-input v-model="tableSearchForm.firmAlias" placeholder="" clearable />
+        </el-form-item>
+        <el-form-item label="厂商编码">
+            <el-input v-model="tableSearchForm.firmCode" placeholder="" clearable />
+        </el-form-item>
+        <el-form-item label="厂商描述">
+            <el-input v-model="tableSearchForm.firmDesc" placeholder="" clearable />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearchSubmit">
             <el-icon class="el-icon--left">
@@ -134,7 +141,7 @@ import { getCurrentInstance, proxyRefs } from "vue";
 
 const { proxy } = getCurrentInstance();
 
-import sysTableApi from "@/api/feat/{{ .UnderlineName }}.js";
+import sysTableApi from "@/api/feat/td_firm.js";
 
 let tableSearchForm = $ref({});
 let tableData = $ref([]); // 表格数据

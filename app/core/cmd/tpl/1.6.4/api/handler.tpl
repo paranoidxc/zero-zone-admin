@@ -24,6 +24,6 @@ func {{.HandlerName}}(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		{{if .HasResp}}response.Response(w, resp, err){{else}}response.Response(w, nil, err){{end}}
+		{{if .HasResp}}response.Response(w, resp, nil){{else}}response.Response(w, nil, nil){{end}}
 	}
 }

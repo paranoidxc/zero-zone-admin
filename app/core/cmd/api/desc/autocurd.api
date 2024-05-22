@@ -28,7 +28,7 @@ service core-api {
 	@doc (
 		summary: "新增"
 	)
-	@handler AddAutoCurd
-	post /add
+	@handler CreateAutoCurd
+	post /create
 }
 

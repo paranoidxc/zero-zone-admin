@@ -1,14 +1,14 @@
 
 func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageReq) (resp *types.{{ .Name }}PageResp, err error) {
     where := " 1 "
-    sys{{ .Name }}Page, err := l.svcCtx.Sys{{ .Name }}Model.FindPageByWhere(l.ctx, where, req.Page, req.Limit)
+    feat{{ .Name }}Page, err := l.svcCtx.Feat{{ .Name }}Model.FindPageByWhere(l.ctx, where, req.Page, req.Limit)
 	if err != nil {
 		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}
 
 	var item types.{{ .Name }}
 	{{ .Name }}Page := make([]*types.{{ .Name }}, 0)
-	for _, v := range sys{{ .Name }}Page {
+	for _, v := range feat{{ .Name }}Page {
 		err := copier.Copy(&item, &v)
 		if err != nil {
 			return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
@@ -16,7 +16,7 @@ func (l *{{ .Name }}PageLogic) {{ .Name }}Page(req *types.{{ .Name }}PageReq) (r
 		{{ .Name }}Page = append({{ .Name }}Page, &item)
 	}
 
-	total, err := l.svcCtx.Sys{{ .Name }}Model.FindPageByWhereCount(l.ctx, where)
+	total, err := l.svcCtx.Feat{{ .Name }}Model.FindPageByWhereCount(l.ctx, where)
     if err != nil {
          return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
     }
