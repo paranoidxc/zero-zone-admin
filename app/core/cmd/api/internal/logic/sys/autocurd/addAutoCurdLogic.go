@@ -49,10 +49,12 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	name = strings.Replace(name, "Tmp", "", -1)
 	fmt.Println("结构体名称", name)
 
+	underlineName := GetUnderlineWord(name)
+	lowerCaseName := strings.ToLower(name[:1]) + name[1:]
+
 	// 主键名字
 	primaryKeyName := m.Field(0).Name
 	primaryKeyJson := m.Field(0).Tag.Get("json")
-	underlineName := GetUnderlineWord(name)
 
 	createStruct := ""
 	createContent := ""
@@ -69,11 +71,12 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	// struct需要的字段
 	for i := 0; i < m.NumField(); i++ {
 		field := m.Field(i)
+		fmt.Printf("field %+v\n", field)
 		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
 		tag := `json:"` + field.Tag.Get("json") + `"`
 		createStruct += (item + " `" + tag + "`" + "\n")
 	}
-	logx.Info("createContent", createContent)
+	fmt.Println("createStruct", createStruct)
 
 	// create需要的字段
 	for i := 1; i < m.NumField(); i++ {
@@ -189,9 +192,8 @@ func (l *AddAutoCurdLogic) AddAutoCurd() error {
 	err = goCtlGenFile()
 	// 编辑logic文件
 	err = editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson, vueFields)
-	return nil
 	// 生成前端文件
-	err = genWebApiFile(underlineName)
+	err = genWebApiFile(underlineName, lowerCaseName)
 	err = genWebVueFile(name, underlineName, primaryKeyJson, vueFields)
 	//resp = &types.Empty{}
 	if err != nil {
@@ -606,34 +608,38 @@ func getPageLogic(name string, vueFields []map[string]string) (string, error) {
 	return tplBuffer.String(), nil
 }
 
-func genWebApiFile(underlineName string) error {
+func genWebApiFile(underlineName, lowerCaseName string) error {
 	projectWd, _ := os.Getwd()
-	fileDir := filepath.Join(projectWd, "../../")
-	file := filepath.Join(projectWd, "../../sources/template/api.tpl")
+	// ../../ cmd
+	fileDir := filepath.Join(projectWd, "../../../../")
+	file := filepath.Join(projectWd, "../tpl/api.tpl")
+	fmt.Println("api tpl file", file)
 	tpl, err := template.ParseFiles(file)
 
 	if err != nil {
 		fmt.Println("create template failed, err:", err)
 		return err
 	}
-	apiFile, err := os.Create(fileDir + "./sources/temp/" + underlineName + ".ts")
+	apiFile, err := os.Create(fileDir + "/web/src/api/system/" + underlineName + ".js")
+	fmt.Println("api file", fileDir+"/web/src/api/system/"+underlineName+".js")
 	defer apiFile.Close()
-	err = tpl.Execute(apiFile, underlineName)
+	err = tpl.Execute(apiFile, lowerCaseName)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
 func genWebVueFile(name, underlineName, primaryKeyJson string, vueFields interface{}) error {
 	projectWd, _ := os.Getwd()
-	fileDir := filepath.Join(projectWd, "../../")
-	filePath := filepath.Join(projectWd, "../../sources/template/table.tpl")
+	fileDir := filepath.Join(projectWd, "../../../../")
+	filePath := filepath.Join(projectWd, "../tpl/table.tpl")
 	tpl, err := template.ParseFiles(filePath)
 	if err != nil {
 		fmt.Println("create template failed, err:", err)
 		return err
 	}
-	file, err := os.Create(fileDir + "./sources/temp/" + underlineName + ".vue")
+	file, err := os.Create(fileDir + "/web/src/views/system/" + underlineName + ".vue")
 	defer file.Close()
 	data := map[string]interface{}{
 		"Name":           name,

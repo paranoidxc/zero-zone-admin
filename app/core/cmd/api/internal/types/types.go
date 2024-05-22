@@ -62,62 +62,62 @@ type Pagination struct {
 }
 
 type TdFirm struct {
-	FirmId    int64  `json:"firm_id"`
-	FirmName  string `json:"firm_name"`
-	FirmAlias string `json:"firm_alias"`
-	FirmCode  string `json:"firm_code"`
-	FirmDesc  string `json:"firm_desc"`
+	FirmId    int64  `json:"firmId"`
+	FirmName  string `json:"firmName"`
+	FirmAlias string `json:"firmAlias"`
+	FirmCode  string `json:"firmCode"`
+	FirmDesc  string `json:"firmDesc"`
 }
 
 type TdFirmCreateReq struct {
-	FirmName  string `json:"firm_name"`
-	FirmAlias string `json:"firm_alias"`
-	FirmCode  string `json:"firm_code"`
-	FirmDesc  string `json:"firm_desc"`
+	FirmName  string `json:"firmName"`
+	FirmAlias string `json:"firmAlias"`
+	FirmCode  string `json:"firmCode"`
+	FirmDesc  string `json:"firmDesc"`
 }
 
 type TdFirmCreateResp struct {
-	FirmId    int64  `json:"firm_id"`
-	FirmName  string `json:"firm_name"`
-	FirmAlias string `json:"firm_alias"`
-	FirmCode  string `json:"firm_code"`
-	FirmDesc  string `json:"firm_desc"`
+	FirmId    int64  `json:"firmId"`
+	FirmName  string `json:"firmName"`
+	FirmAlias string `json:"firmAlias"`
+	FirmCode  string `json:"firmCode"`
+	FirmDesc  string `json:"firmDesc"`
 }
 
 type TdFirmDeleteReq struct {
-	FirmId int64 `form:"firm_id"`
+	FirmId int64 `form:"firmId"`
 }
 
 type TdFirmDeleteResp struct {
-	FirmId int64 `json:"firm_id"`
+	FirmId int64 `json:"firmId"`
 }
 
 type TdFirmDeletesReq struct {
-	FirmId []int64 `form:"[]firm_id"`
+	FirmId []int64 `form:"[]firmId"`
 }
 
 type TdFirmDeletesResp struct {
-	FirmId int64 `json:"[]firm_id"`
+	FirmId int64 `json:"[]firmId"`
 }
 
 type TdFirmDetailReq struct {
-	FirmId int64 `form:"firm_id"`
+	FirmId int64 `form:"firmId"`
 }
 
 type TdFirmDetailResp struct {
-	FirmId    int64  `json:"firm_id"`
-	FirmName  string `json:"firm_name"`
-	FirmAlias string `json:"firm_alias"`
-	FirmCode  string `json:"firm_code"`
-	FirmDesc  string `json:"firm_desc"`
+	FirmId    int64  `json:"firmId"`
+	FirmName  string `json:"firmName"`
+	FirmAlias string `json:"firmAlias"`
+	FirmCode  string `json:"firmCode"`
+	FirmDesc  string `json:"firmDesc"`
 }
 
 type TdFirmListReq struct {
 	PageReq
-	FirmName  *string `form:"firm_name,option"`
-	FirmAlias *string `form:"firm_alias,option"`
-	FirmCode  *string `form:"firm_code,option"`
-	FirmDesc  *string `form:"firm_desc,option"`
+	FirmName  *string `form:"firmName,option"`
+	FirmAlias *string `form:"firmAlias,option"`
+	FirmCode  *string `form:"firmCode,option"`
+	FirmDesc  *string `form:"firmDesc,option"`
 }
 
 type TdFirmListResp struct {
@@ -127,10 +127,10 @@ type TdFirmListResp struct {
 
 type TdFirmPageReq struct {
 	PageReq
-	FirmName  *string `form:"firm_name,option"`
-	FirmAlias *string `form:"firm_alias,option"`
-	FirmCode  *string `form:"firm_code,option"`
-	FirmDesc  *string `form:"firm_desc,option"`
+	FirmName  *string `form:"firmName,option"`
+	FirmAlias *string `form:"firmAlias,option"`
+	FirmCode  *string `form:"firmCode,option"`
+	FirmDesc  *string `form:"firmDesc,option"`
 }
 
 type TdFirmPageResp struct {
@@ -139,19 +139,19 @@ type TdFirmPageResp struct {
 }
 
 type TdFirmUpdateReq struct {
-	FirmId    int64  `json:"firm_id"`
-	FirmName  string `json:"firm_name"`
-	FirmAlias string `json:"firm_alias"`
-	FirmCode  string `json:"firm_code"`
-	FirmDesc  string `json:"firm_desc"`
+	FirmId    int64  `json:"firmId"`
+	FirmName  string `json:"firmName"`
+	FirmAlias string `json:"firmAlias"`
+	FirmCode  string `json:"firmCode"`
+	FirmDesc  string `json:"firmDesc"`
 }
 
 type TdFirmUpdateResp struct {
-	FirmId    int64  `json:"firm_id"`
-	FirmName  string `json:"firm_name"`
-	FirmAlias string `json:"firm_alias"`
-	FirmCode  string `json:"firm_code"`
-	FirmDesc  string `json:"firm_desc"`
+	FirmId    int64  `json:"firmId"`
+	FirmName  string `json:"firmName"`
+	FirmAlias string `json:"firmAlias"`
+	FirmCode  string `json:"firmCode"`
+	FirmDesc  string `json:"firmDesc"`
 }
 
 type UpdateCronjobReq struct {
