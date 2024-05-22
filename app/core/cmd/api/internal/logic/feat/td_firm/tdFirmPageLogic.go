@@ -2,6 +2,8 @@ package td_firm
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"zero-zone/app/core/cmd/api/internal/svc"
 	"zero-zone/app/core/cmd/api/internal/types"
@@ -28,6 +30,21 @@ func NewTdFirmPageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TdFirm
 
 func (l *TdFirmPageLogic) TdFirmPage(req *types.TdFirmPageReq) (resp *types.TdFirmPageResp, err error) {
 	where := " 1 "
+	if len(strings.TrimSpace(req.FirmName)) > 0 {
+		where = where + fmt.Sprintf(" AND firm_name LIKE '%s'", "%"+strings.TrimSpace(req.FirmName)+"%")
+	}
+	/*
+	   if len(req.FirmAlias) > 0 {
+	       where = where + fmt.Sprintf(" AND firm_alias LIKE '%s'", "%"+req.FirmAlias+"%")
+	   }
+	   if len(req.FirmCode) > 0 {
+	       where = where + fmt.Sprintf(" AND firm_code LIKE '%s'", "%"+req.FirmCode+"%")
+	   }
+	   if len(req.FirmDesc) > 0 {
+	       where = where + fmt.Sprintf(" AND firm_desc LIKE '%s'", "%"+req.FirmDesc+"%")
+	   }
+	*/
+
 	featTdFirmPage, err := l.svcCtx.FeatTdFirmModel.FindPageByWhere(l.ctx, where, req.Page, req.Limit)
 	if err != nil {
 		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())

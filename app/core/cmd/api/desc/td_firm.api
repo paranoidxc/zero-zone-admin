@@ -30,7 +30,7 @@ type TdFirmDeleteResp {
 }
 
 type TdFirmDeletesReq {
-	FirmId []int64 `json:"[]firmId"`
+	FirmId []int64 `json:"firmId"`
 }
 
 type TdFirmDeletesResp {
@@ -66,10 +66,10 @@ type TdFirmDetailResp {
 }
 
 type TdFirmListReq {
-	FirmName  *string `form:"firmName,optional"`
-	FirmAlias *string `form:"firmAlias,optional"`
-	FirmCode  *string `form:"firmCode,optional"`
-	FirmDesc  *string `form:"firmDesc,optional"`
+	FirmName  string `form:"firmName,optional"`
+	FirmAlias string `form:"firmAlias,optional"`
+	FirmCode  string `form:"firmCode,optional"`
+	FirmDesc  string `form:"firmDesc,optional"`
 }
 
 type TdFirmListResp {
@@ -79,10 +79,10 @@ type TdFirmListResp {
 
 type TdFirmPageReq {
 	PageReq
-	FirmName  *string `form:"firmName,optional"`
-	FirmAlias *string `form:"firmAlias,optional"`
-	FirmCode  *string `form:"firmCode,optional"`
-	FirmDesc  *string `form:"firmDesc,optional"`
+	FirmName  string `form:"firmName,optional"`
+	FirmAlias string `form:"firmAlias,optional"`
+	FirmCode  string `form:"firmCode,optional"`
+	FirmDesc  string `form:"firmDesc,optional"`
 }
 
 type TdFirmPageResp {

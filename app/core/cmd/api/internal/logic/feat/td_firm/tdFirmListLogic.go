@@ -8,7 +8,7 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
-
+	
 	errorx2 "zero-zone/app/pkg/errorx"
 )
 
@@ -27,8 +27,22 @@ func NewTdFirmListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TdFirm
 }
 
 func (l *TdFirmListLogic) TdFirmList(req *types.TdFirmListReq) (resp *types.TdFirmListResp, err error) {
-	where := " 1 "
-	featTdFirmList, err := l.svcCtx.FeatTdFirmModel.FindAllByWhere(l.ctx, where)
+    where := " 1 "
+    /*
+    if len(req.FirmName) > 0 {
+        where = where + fmt.Sprintf(" AND firm_name LIKE '%s'", "%"+req.FirmName+"%")
+    }
+    if len(req.FirmAlias) > 0 {
+        where = where + fmt.Sprintf(" AND firm_alias LIKE '%s'", "%"+req.FirmAlias+"%")
+    }
+    if len(req.FirmCode) > 0 {
+        where = where + fmt.Sprintf(" AND firm_code LIKE '%s'", "%"+req.FirmCode+"%")
+    }
+    if len(req.FirmDesc) > 0 {
+        where = where + fmt.Sprintf(" AND firm_desc LIKE '%s'", "%"+req.FirmDesc+"%")
+    }
+    */
+    featTdFirmList, err := l.svcCtx.FeatTdFirmModel.FindAllByWhere(l.ctx, where)
 	if err != nil {
 		return nil, errorx2.NewSystemError(errorx2.ServerErrorCode, err.Error())
 	}

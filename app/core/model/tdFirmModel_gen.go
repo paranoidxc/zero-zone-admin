@@ -125,7 +125,7 @@ func (m *defaultTdFirmModel) FindAllByWhereCount(ctx context.Context, where stri
 
 func (m *defaultTdFirmModel) FindPageByWhere(ctx context.Context, where string, page int64, limit int64) ([]*TdFirm, error) {
 	offset := (page - 1) * limit
-	query := fmt.Sprintf("SELECT %s FROM %s ORDER BY `firm_id` DESC LIMIT %d,%d", tdFirmRows, m.table, offset, limit)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s ORDER BY `firm_id` DESC LIMIT %d,%d", tdFirmRows, m.table, where, offset, limit)
 	var resp []*TdFirm
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
 	switch err {

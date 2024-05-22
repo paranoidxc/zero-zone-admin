@@ -33,7 +33,6 @@ func NewCreateAutoCurdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cr
 }
 
 func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
-	// todo: add your logic here and delete this line
 	// 获取结构体
 	reqModelName := "TdFirm"
 	var modelStruct interface{}
@@ -128,14 +127,14 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	// list request需要的字段
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
-		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
+		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
 		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
 		listContent += (item + " `" + tag + "`" + "\n")
 	}
 	// page request需要的字段
 	for i := 1; i < m.NumField(); i++ {
 		field := m.Field(i)
-		item := fmt.Sprintf(`%v *%v`, field.Name, field.Type)
+		item := fmt.Sprintf(`%v %v`, field.Name, field.Type)
 		tag := `form:"` + field.Tag.Get("json") + ",optional" + `"`
 		pageContent += (item + " `" + tag + "`" + "\n")
 	}
@@ -144,9 +143,10 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 		field := m.Field(i)
 		key := field.Tag.Get("json")
 		item := field.Tag.Get("gorm")
-		label := getColumnFromGormTag(item)
-		fmt.Println(label)
-		vueFields = append(vueFields, map[string]string{"Key": key, "Label": label, "Name": field.Name})
+		label := getCommentFromGormTag(item)
+		column := getColumnFromGormTag(item)
+		fmt.Println("label", label)
+		vueFields = append(vueFields, map[string]string{"Key": key, "Label": label, "Name": field.Name, "Column": column})
 	}
 
 	CreateStruct := getStruct(name, createStruct)
@@ -190,10 +190,10 @@ func (l *CreateAutoCurdLogic) CreateAutoCurd() error {
 	// 将.api文件加入总的api文件
 	//err = addApiFile(underlineName)
 	// 运行goctl命令生成代码
-	//err = goCtlGenFile()
+	err = goCtlGenFile()
 	//err = goCtlGenModelFile(l, underlineName)
 	// 编辑logic文件
-	//err = editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson, vueFields)
+	err = editLogicFile(name, underlineName, primaryKeyName, primaryKeyJson, vueFields)
 	// 生成前端文件
 	err = genWebApiFile(underlineName, lowerCaseName, primaryKeyJson)
 	err = genWebVueFile(name, underlineName, primaryKeyJson, vueFields)
@@ -677,12 +677,26 @@ func genWebVueFile(name, underlineName, primaryKeyJson string, vueFields interfa
 	}
 	return nil
 }
-func getColumnFromGormTag(tag string) string {
+
+func getCommentFromGormTag(tag string) string {
 	parts := strings.Split(tag, ";") // 根据分号分割tag
 	for _, part := range parts {
 		fmt.Println(1, part)
 		if strings.Contains(part, "comment:") {
 			column := strings.TrimPrefix(part, "comment:")
+			fmt.Println(2, column)
+			return column
+		}
+	}
+	return ""
+}
+
+func getColumnFromGormTag(tag string) string {
+	parts := strings.Split(tag, ";") // 根据分号分割tag
+	for _, part := range parts {
+		fmt.Println(1, part)
+		if strings.Contains(part, "column:") {
+			column := strings.TrimPrefix(part, "column:")
 			fmt.Println(2, column)
 			return column
 		}

@@ -26,7 +26,7 @@ func (m *default{{.upperStartCamelObject}}Model) FindOne(ctx context.Context, {{
 }
 
 func (m *default{{.upperStartCamelObject}}Model) FindAllByWhere(ctx context.Context, where string) ([]*{{.upperStartCamelObject}}, error) {
-    query := fmt.Sprintf("SELECT %s FROM %s ORDER BY {{.originalPrimaryKey}} DESC", {{.lowerStartCamelObject}}Rows, m.table)
+    query := fmt.Sprintf("SELECT %s FROM %s WHERE %s ORDER BY {{.originalPrimaryKey}} DESC", {{.lowerStartCamelObject}}Rows, m.table, where)
 	var resp []*{{.upperStartCamelObject}}
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
 	switch err {
@@ -51,7 +51,7 @@ func (m *default{{.upperStartCamelObject}}Model) FindAllByWhereCount(ctx context
 
 func (m *default{{.upperStartCamelObject}}Model) FindPageByWhere(ctx context.Context, where string, page int64, limit int64) ([]*{{.upperStartCamelObject}}, error) {
 	offset := (page - 1) * limit
-	query := fmt.Sprintf("SELECT %s FROM %s ORDER BY {{.originalPrimaryKey}} DESC LIMIT %d,%d", {{.lowerStartCamelObject}}Rows, m.table, offset, limit)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s ORDER BY {{.originalPrimaryKey}} DESC LIMIT %d,%d", {{.lowerStartCamelObject}}Rows, m.table, where, offset, limit)
 	var resp []*{{.upperStartCamelObject}}
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
 	switch err {
