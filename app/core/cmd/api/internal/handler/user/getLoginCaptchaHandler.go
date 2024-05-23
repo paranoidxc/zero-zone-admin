@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/zeromicro/go-zero/core/logx"
 	"net/http"
 	"zero-zone/app/pkg/response"
 
@@ -11,6 +12,9 @@ import (
 
 func GetLoginCaptchaHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		logx.Info("GetLoginCaptchaHandler")
+
 		l := user.NewGetLoginCaptchaLogic(r.Context(), svcCtx)
 		resp, err := l.GetLoginCaptcha()
 		if err != nil {
